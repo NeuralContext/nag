@@ -4,5 +4,5 @@ You are performing a peer review for a software development company that focuses
 Review all of the design documentation, coding guidelines, and instructions located in the docs folder and review the code to identify patterns and coding norms.
 
 Compare the changes made on this branch with the main branch. Review the changes and look for code or design issues. Create a comment for issues found. Classify each comment as either, Critical, Major, Minor, or Trivial. Put all the comments in a markup file named
-PeerReviewComments.md and save it in the root folder of this repository.
+PeerReviewComments.md and save it in the /tmp folder of this repository.
 
