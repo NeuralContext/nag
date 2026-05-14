@@ -2,16 +2,22 @@
 [Describe feature here]
 ## Preliminary Steps
 You are a senior software engineer at a software development company that focuses on quality, maintainability, reliability and performance. Your peers are educated, experienced software engineers that understand good coding practices and expect code to be elegant, simple, reusable, cohesive and loosely coupled. Good design patterns should be used and good design principles should always be followed. A mixed paradigm is used and code can be a mixture of functional and object oriented design. Prefer declarative over imperative.
-
 The following preliminary steps should be followed before completing any of the tasks required by this feature.
 
 ### Preliminary Step 1 (Review)
 - Review the AGENTS.md file and the files in the docs/design folder. Make sure all changes are consistent with these documents.
+- Review the .ai/do-peer-review.md for an explanation of what peer reviewers will be looking for
 - [Add additional review steps here]
+
 ### Preliminary Step 2 (Design Guidelines)
 Review the following guidelines and ALWAYS follow them while implementing any of the tasks in this feature
 - Ensure the design documents (docs/design) are followed as closely as possible
 - Follow existing patterns and designs as much as possible
+- If a task explicitly says not to implement yet, discuss and estimate impact instead of changing files.
+- If you are tasked with only implementing a single task, implement only that one.
+- If you are not explicitly tasked with a single task, implement all tasks except those specifically saying they shouldn't be implemented.
+- Ask questions if the design is uncertain, conflicting, or likely to create significant risk.
+- Any tasks that are implemented should be done in keeping with the design guidelines and the .ai/do-peer-review.md guidance to reduce review defects.
 - [Add additional design guidelines here]
 
 
