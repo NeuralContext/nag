@@ -34,3 +34,6 @@ Implement this using the following steps:
 ### [Add additional steps here if required]
 
 ## [Add additional tasks here if required]
+
+## Architecture Decision Record (Historical)
+This section contains a list of design decisions. These are relevant to the design at peer review time but should not be maintained as the design evolves over time. Once the feature is merged, these are fixed and historical.
