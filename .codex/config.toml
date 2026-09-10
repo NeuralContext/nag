@@ -1,0 +1,34 @@
+service_tier = "auto"      # anything other than "fast"/"priority"; "auto" lets Codex use Standard
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[agents]
+max_threads = 2
+max_depth = 1
+
+[features]
+fast_mode = false
+
+# Persist the opt-out that `/fast off` writes, so a fast-on default can't re-apply
+[notice]
+fast_default_opt_out = true
+
+[permissions.filesystem]
+# Explicitly deny access so tools like read or cat hard-fail
+deny = [
+  "**/.venv/**",
+  "**/node_modules/**",
+  "**/dist/**"
+]
+
+# Ask before modifying skills (takes priority over general workspace allow)
+ask_write = [
+    ".codex/**",
+    ".agents/**",
+    "AGENTS.md"
+]
+
+# Silently allow all other writes inside the workspace
+allow_write = [
+    "**/*"
+]
