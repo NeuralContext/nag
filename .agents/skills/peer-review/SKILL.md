@@ -1,9 +1,9 @@
 ---
-name: peer-review-task
+name: peer-review
 description: Run a scoped peer review of the implementation of a spec file focusing on the changes and impact from those changes as defined in the associated spec. Then create a peer review comments file at `.agents/specs/<spec-file-name>-pr.md` where <spec-file-name> is the name of the spec file you are reviewing against. Use when the user asks to "peer review", "review this branch", or "run the peer review" or when reviewing the output of an implemenation model. This skill references architecture guidance and documentation that should be considered when reviewing. This skill itself also contains specific guidance about review standards, severity definitions, package-boundary rules, and recurring defect patterns. STRICTLY read-only — it makes NO code changes and NO commits; it only produces the review file.
 ---
 
-# Peer Review Task (nc-algorithm)
+# Peer Review
 
 Perform a scoped peer review of recent changes on this branch and summarize the findings into the peer review comments file.
 Resolution happens in a later skill, not here.

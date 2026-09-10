@@ -21,7 +21,7 @@ Example: `.agents/specs/123-fix-concurrency-bugs.md`
 ## Step 2 — Gather context
 
 - Read `AGENTS.md`, `CLAUDE.md`, and every file in `docs/design/` (e.g. `concurrency-design.md`, `data_interface_overview.md`, `detailed-overview.md`, `guidelines.md`, `integrations.md`) so the task file's guidelines match the project's real conventions and priorities (reliability, accuracy, performance, maintainability, extensibility).
-- Skim the review standards in `.agents/skills/peer-review-task/SKILL.md` so the task file's plan avoids the recurring defect patterns reviewers look for (package-boundary violations, hidden dependency construction, non-atomic aggregate updates, stale worker runtime, service-owns-worker-state, missing provenance, test-marker drift).
+- Skim the review standards in `.agents/skills/peer-review/SKILL.md` so the task file's plan avoids the recurring defect patterns reviewers look for (package-boundary violations, hidden dependency construction, non-atomic aggregate updates, stale worker runtime, service-owns-worker-state, missing provenance, test-marker drift).
 - Draw on the **information provided in this terminal conversation** — everything the user has said about the feature, constraints, and intent — as the primary source for the task description.
 
 ## Step 3 — Write the spec
