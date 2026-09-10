@@ -1,8 +1,10 @@
-# agent-based-dev
+# Nag
 
-agent-based-dev captures NeuralContext's agent-based software development process, agent skills, tools, and documentation for agents and humans. The goal: agent-based development guided by clear specs and repeatable checks.
+Nag (Neural Context agent gating) captures NeuralContext's agent-based software development process, agent skills, tools, and documentation for agents and humans. The goal: agent-based development guided by deterministic metrics that focus on self-documenting, quality code and validated test coverage instead of reams of old specs.
 
 It is open source, and anyone is welcome to use it. We welcome suggestions, questions, and contributions.
+
+![Agent-based development workflow: define and approve the work; iterate between implementation and review using deterministic metrics as guardrails; give humans self-documenting code, high-level code and test visualizations, and small high-level documentation updates to review; then prepare for delivery.](assets/agent-based-development-workflow.png)
 
 ## Structure Overview
 
@@ -85,10 +87,6 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 7. **Architect:** Run `$peer-review-task` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
 8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the human.
 9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the human can request `$create-change-summary` to record what actually changed.
-
-### Diagram
-
-![Agent-based development workflow: define and approve the work; iterate between implementation and review using deterministic metrics as guardrails; give humans self-documenting code, high-level code and test visualizations, and small high-level documentation updates to review; then prepare for delivery.](assets/agent-based-development-workflow.png)
 
 ### Skills
 
