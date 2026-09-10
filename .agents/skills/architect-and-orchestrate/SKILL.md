@@ -24,7 +24,7 @@ At the start of each invocation and before each iteration, resolve the skills na
 
 Read each available skill fully before using it at its assigned stage, and give the implementer its resolved path and responsibility. Do not recursively invoke `$architect-and-orchestrate` as a dependency.
 
-If a dependency is missing, warn with its name and affected stage, record the gap in the current spec and final report, and proceed without that skill. Use existing repository validation commands for missing check skills; missing tooling does not waive required checks or acceptance criteria. Distinguish skipped or unavailable checks from passes. If `$create-spec` is missing, write a spec with the contents listed below; if `$peer-review-task` is missing, perform a scoped architect review and record findings and severity counts in the spec. Identify these as fallbacks, not executions of the missing skills. For missing visualization or change-summary skills, report the omitted deliverable and continue.
+If a dependency is missing, warn with its name and affected stage, record the gap in the current spec and final report, and proceed without that skill. Use existing repository validation commands for missing check skills; missing tooling does not waive required checks or acceptance criteria. Distinguish skipped or unavailable checks from passes. If `$create-spec` is missing, write a spec with the contents listed below; if `$peer-review` is missing, perform a scoped architect review and record findings and severity counts in the spec. Identify these as fallbacks, not executions of the missing skills. For missing visualization or change-summary skills, report the omitted deliverable and continue.
 
 An installed skill with a failed check or a missing prerequisite is not an absent skill: follow its instructions and report unresolved failures honestly.
 
@@ -48,7 +48,7 @@ For each iteration:
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
 4. Have the implementer prepare human-review visualizations with `$test-dashboard` and `$mermaid-visualizer` when available. Refresh affected visualizations in subsequent iterations.
-5. Run `$peer-review-task` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
+5. Run `$peer-review` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
 6. Triage the review. Address every critical and major/high-severity issue through delegated fixes. For a medium-or-higher risk design decision that is important and not clearly determined by the agreed scope or codebase, pause and ask the user for direction; present the decision, options, recommendation, and consequence of deferring it.
 7. If the review threshold is not met, create the next versioned spec addressing the non-trivial findings and delegate it. Reuse the same lower-tier agent when practical; otherwise spawn another lower-tier implementation agent. Repeat implementation, validation, visualization, and review.
 

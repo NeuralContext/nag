@@ -84,7 +84,7 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
 6. **Implementer:** Prepare visualizations for human review with `$test-dashboard` and `$mermaid-visualizer` when available.
-7. **Architect:** Run `$peer-review-task` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
+7. **Architect:** Run `$peer-review` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
 8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the human.
 9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the human can request `$create-change-summary` to record what actually changed.
 
@@ -105,5 +105,5 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 | [`$dead-code-cleanup`](.agents/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
 | `$test-dashboard` | Visualize test results for human review. | Agent | **Yes** |
 | `$mermaid-visualizer` | Create diagrams for human review. | Agent | **Yes** |
-| [`$peer-review-task`](.agents/skills/peer-review-task/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
+| [`$peer-review`](.agents/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
 | [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write a PR summary and append it to the task file. | Human | No |
