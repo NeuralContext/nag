@@ -49,7 +49,7 @@ For each iteration:
    | 3 | `$check-test-fidelity` | Verify tests reflect real use and infrastructure. |
    | 4 | `$check-test-coverage` | Check coverage of required behavior. |
    | 5 | `$run-tests` | Run required test suites. |
-   | 6 | `$dead-code-cleanup` | Verify and remove unused TypeScript or JavaScript code when the iteration has a dead-code objective. |
+   | 6 | `$dead-code-cleanup` | Verify and remove unused code introduced by current changes or when the spec has a dead-code objective. |
 
 4. Have the implementer prepare human-review visualizations with `$test-dashboard` and `$mermaid-visualizer` when available. Refresh affected visualizations in subsequent iterations.
 5. Run `$peer-review` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
