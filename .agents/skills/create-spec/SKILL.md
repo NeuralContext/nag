@@ -7,16 +7,20 @@ description: Create a specification file that a lower-tier agent can use to impl
 
 Generate a specification file that a lower tier agent can use to implement a change. If you are uncertain, if something is unclear, if you see missing items, or if you have security or design concerns about the content, ask the user. Work with the user to create the spec.
 
-## Step 1 — Establish identity
-
-1. Get the current branch name:
-   ```bash
-   git branch --show-current
-   ```
-2. The spec file MUST be a markdown file named using kebab-case. The name MUST include the first section of the branch name (typically the issue number) and a kebab-case description of the task composed of no more than 6 words.
-Example: `.agents/specs/123-fix-concurrency-bugs.md`
-
-3. If a file already exists at that path, STOP and ask the user whether to overwrite, append, or abort. Never silently clobber an existing task file.
+## Step 1 — Establish a Filename for the Spec
+The filename must use kebab-case and must be a Markdown file with an 'md' extension.
+1. Preferred Approach
+   - If the user provides a filename use it
+   - If the user does not provide a filename but a concise filename can reasonably be extracted by what the text they've provided, use this name and prompt to ensure the user accepts the name
+2. Secondary Approach
+   - If the user does not provide sufficient information to determine a filename, use the branch information:
+      - Get the current branch name:
+         ```bash
+         git branch --show-current
+         ```
+      - Create a filename that includes the first section of the branch name (typically the issue number) and a kebab-case description of the task composed of no more than 6 words based on the branch name.
+         - Example: `.agents/specs/123-fix-concurrency-bugs.md`
+3. If a file already exists at the path, STOP and ask the user whether to overwrite, append, provide a new filename or abort. Never silently clobber an existing spec file.
 
 ## Step 2 — Gather context
 
