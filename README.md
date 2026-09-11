@@ -1,6 +1,6 @@
 # Nag
 
-Nag (Neural Context agent gating) captures NeuralContext's agent-based software development process, agent skills, tools, and documentation for agents and humans. The goal: agent-based development guided by deterministic metrics that focus on self-documenting, quality code and validated test coverage instead of reams of old specs.
+Nag ([Neural Context](https://ncclassify.com) agent gating) captures [NeuralContext's](https://ncclassify.com) agent-based software development process, agent skills, tools, and documentation for agents and humans. The goal: agent-based development guided by deterministic metrics that focus on self-documenting, quality code and validated test coverage instead of reams of old specs.
 
 It is open source, and anyone is welcome to use it. We welcome suggestions, questions, and contributions.
 
@@ -26,11 +26,20 @@ We're being pragmatic here, not idealistic. Plus, we're a start-up, so some thin
 
 1. Code Correctness (does it compile and do what it's supposed to do?)
 2. Code Quality
-3. Test Fidelity (how closely tests reflect real use)
-4. Test Correctness (whether tests check the right behavior reliably)
-5. Test Coverage
-6. Money (token count, efficiency, model utilization)
-7. Speed (time-to-build)
+   - Good architecture and adherence to the design
+   - Self documenting
+   - Intelligible by Agents and Humans
+3. Test Quality
+   - Fidelity (avoids mocks where possible)
+   - Correctness (checks realistic behavior and corner cases)
+   - Coverage (higher coverage where it matters most)
+6. Money 
+   - Token burn rate
+   - Use model tiers efficiently
+   - Improve developer + agent efficiency
+7. Speed 
+   - Time-to-build
+   - Reduce cognitive overload / context creep for developers and agents
 
 ## Principles
 
@@ -39,7 +48,7 @@ This is how we achieve high-quality code at a reasonable speed and price.
 1. Code is the primary source of documentation.
 2. Deterministic checks and metrics provide guardrails for all agent-based development.
 3. Orchestrate iterative development between higher-tier architect/orchestrator models and lower-tier implementation models.
-4. Use high-level visualizations for human review.
+4. Use high-level visualizations for developer review.
 
 ## Getting Started
 
@@ -51,11 +60,11 @@ This is how we achieve high-quality code at a reasonable speed and price.
 4. Run `$update-agent-guidance` to align the guidance and skills with the target repository's language, tooling, and conventions.
 5. Review the updated guidance and resolve any missing references before starting development.
 
-> **NOTE:** This library is oriented toward Python, and some skills still include NeuralContext-specific paths and conventions. `$update-agent-guidance` adapts the guidance to the target repo, including other languages; it may ask for input where a change needs a decision.
+> **NOTE:** This library is oriented toward Python, and some skills assume certain paths and conventions. `$update-agent-guidance` adapts the guidance to the target repo, including other languages; it may ask for input where a change needs a decision.
 
 > **WORK IN PROGRESS:** Some skills in the process below aren't included yet. The [Skills](#skills) table marks them explicitly. Until they're added, use the target repo's existing validation commands and document any gaps in the spec.
 
-## Development Process Overview
+## How to Use Nag (development process overview)
 
 Initialize the repo using [Getting Started](#getting-started) before following this process.
 
@@ -64,13 +73,20 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 - **Agent (Architect):** A high-tier model responsible for scoping, specs, orchestration, and review.
 - **Agent (Implementer):** A low- or mid-tier model responsible for implementing the spec and validating the changes.
 - **Skill:** Reusable instructions in a `SKILL.md` file, plus any supporting scripts or resources.
-- **Human:** You!
+- **Developer:** You!
 
 ### Process
 
-1. **Human:** Create a branch with the issue number at the start (e.g. `134-fix-all-the-broken-stuff`). Start Codex with a high-tier model and run `$create-spec`.
-2. **Architect + Human:** Work together to define the scope and acceptance criteria. The architect writes the initial spec in `.agents/specs/`; the human answers questions and approves it before implementation.
-3. **Human:** Run `$architect-and-orchestrate` and point it to the approved spec.
+1. **Developer:** 
+   - Create a branch with the issue number at the start (e.g. `134-fix-all-the-broken-stuff`)
+   - Start Codex with a high-tier model (e.g. 5.6-sol or astra)
+   - Run `$create-spec`.
+      - Optionally include a desired filename and a brief description of the goal of the spec (or as much detail as you want)
+2. **Architect + Developer:** 
+   - Work together to define the scope and acceptance criteria
+   - Architect  agent writes the initial spec in `.agents/specs/`
+   - Developer answers questions and approves it before implementation.
+3. **Developer:** Run `$architect-and-orchestrate` and point it to the approved spec.
 4. **Architect:** Delegate the spec to an implementation agent.
 5. **Implementer:** Implement the spec and validate it using the checks below. For each check, fix the issues and rerun it before moving on. Repeat affected checks after later fixes until all required checks pass.
 
@@ -83,10 +99,10 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    | 5 | `$run-tests` | Run the required test suites. |
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
-6. **Implementer:** Prepare visualizations for human review with `$test-dashboard` and `$mermaid-visualizer` when available.
+6. **Implementer:** Prepare visualizations for developer review with `$test-dashboard` and `$mermaid-visualizer` when available.
 7. **Architect:** Run `$peer-review` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
-8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the human.
-9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the human can request `$create-change-summary` to record what actually changed.
+8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the developer.
+9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to record what actually changed.
 
 ### Skills
 
@@ -94,16 +110,16 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 
 | Skill | Brief summary | Who uses it | Missing? |
 | --- | --- | --- | --- |
-| [`$update-agent-guidance`](.agents/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Human | No |
+| [`$update-agent-guidance`](.agents/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Developer | No |
 | [`$create-spec`](.agents/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
-| [`$architect-and-orchestrate`](.agents/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Human | No |
+| [`$architect-and-orchestrate`](.agents/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
 | `$check-code-correctness` | Check builds and code correctness. | Agent | **Yes** |
 | `$check-code-quality` | Check code quality and maintainability. | Agent | **Yes** |
 | `$check-test-fidelity` | Check how well tests reflect real use. | Agent | **Yes** |
 | `$check-test-coverage` | Check coverage of required behavior. | Agent | **Yes** |
 | `$run-tests` | Run the required test suites. | Agent | **Yes** |
 | [`$dead-code-cleanup`](.agents/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
-| `$test-dashboard` | Visualize test results for human review. | Agent | **Yes** |
-| `$mermaid-visualizer` | Create diagrams for human review. | Agent | **Yes** |
+| `$test-dashboard` | Visualize test results for developer review. | Agent | **Yes** |
+| `$mermaid-visualizer` | Create diagrams for developer review. | Agent | **Yes** |
 | [`$peer-review`](.agents/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
-| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write a PR summary and append it to the task file. | Human | No |
+| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write a PR summary and append it to the task file. | Developer | No |
