@@ -20,17 +20,21 @@ Confirm that repository setup is complete and the current branch starts with the
 
 ## Discover dependency skills
 
-At the start of each invocation and before each iteration, resolve the skills named below from `.agents/skills/<skill-name>/SKILL.md`, then from the environment's available skill catalog if no repository copy exists. Check the actual files each time; do not rely on a fixed availability list or the README's “Missing” column. This lets newly added skills participate without changes to this orchestrator.
+At the start of each invocation resolve the skills named below from `.agents/skills/<skill-name>/SKILL.md`, then from the environment's available skill catalog if no repository copy exists. Check the actual files each time; do not rely on a fixed availability list or the README's “Missing” column. This lets newly added skills participate without changes to this orchestrator.
 
 Read each available skill fully before using it at its assigned stage, and give the implementer its resolved path and responsibility. Do not recursively invoke `$architect-and-orchestrate` as a dependency.
 
-If a dependency is missing, warn with its name and affected stage, record the gap in the current spec and final report, and proceed without that skill. Use existing repository validation commands for missing check skills; missing tooling does not waive required checks or acceptance criteria. Distinguish skipped or unavailable checks from passes. If `$create-spec` is missing, write a spec with the contents listed below; if `$peer-review` is missing, perform a scoped architect review and record findings and severity counts in the spec. Identify these as fallbacks, not executions of the missing skills. For missing visualization or change-summary skills, report the omitted deliverable and continue.
+The following skill dependencies are required and should cause this skill to abort with an error if they are not present: `$create-spec` and `$peer-review`.
+
+If other skill dependencies are missing, provide a warning to the user and continue without those skill dependencies.
 
 An installed skill with a failed check or a missing prerequisite is not an absent skill: follow its instructions and report unresolved failures honestly.
 
+If a skill dependency is present, you must use it within the spec, implement, review loop (step 3) below. You are not allowed to skip skill dependencies that are present.
+
 ## Spec, implement, review loop
 
-Use `$create-spec` when available to create each new implementation spec. Follow its naming convention exactly for the first spec; without it, use `.agents/specs/<issue-number>-<short-task-description>.md`. For every later spec, retain that base name and append a version suffix at the end (for example, `feature-name-v2`), using the convention prescribed by `$create-spec` if it differs. Preserve existing files and approved specs.
+Use `$create-spec` to create each new implementation spec. Follow its naming guidance exactly for the first spec. For every later spec, retain that base name and append a version suffix at the end (for example, `feature-name-v2.md`), using the convention prescribed by `$create-spec`. Preserve existing files and approved specs.
 
 For each iteration:
 
@@ -45,7 +49,7 @@ For each iteration:
    | 3 | `$check-test-fidelity` | Verify tests reflect real use and infrastructure. |
    | 4 | `$check-test-coverage` | Check coverage of required behavior. |
    | 5 | `$run-tests` | Run required test suites. |
-   | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
+   | 6 | `$dead-code-cleanup` | Verify and remove unused TypeScript or JavaScript code when the iteration has a dead-code objective. |
 
 4. Have the implementer prepare human-review visualizations with `$test-dashboard` and `$mermaid-visualizer` when available. Refresh affected visualizations in subsequent iterations.
 5. Run `$peer-review` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
@@ -64,6 +68,6 @@ Repeat the loop until the review has no critical or major/high issues and at mos
 ## Items to Exclude From Context
 The following files/folders should be excluded from general context gathering by the architect-orchestrator and by any sub-agents implementing changes. Access specific files when explicitly requested by the user or required as inputs or outputs by an active dependency skill (for example, review or summary artifacts in `tmp/`); this does not authorize browsing the whole excluded directory. For other required access, ask the user for permission. All of the following are relative to the repository root.
 - .agents/specs/history
-- setup/
 - tmp/
-- nc-svc/.venv
+- dist/
+- node_modules/
