@@ -20,7 +20,7 @@ The filename must use kebab-case and must be a Markdown file with an 'md' extens
          ```
       - Create a filename that includes the first section of the branch name (typically the issue number) and a kebab-case description of the task composed of no more than 6 words based on the branch name.
          - Example: `.agents/specs/123-fix-concurrency-bugs.md`
-3. If a file already exists at the path, STOP and ask the user whether to overwrite, append, provide a new filename or abort. Never silently clobber an existing spec file.
+3. If a file already exists at the path, STOP and ask the user whether to overwrite, append, update, or provide a new filename or abort. Never silently clobber an existing spec file.
 
 ## Step 2 — Gather context
 
