@@ -33,7 +33,7 @@ The filename must use kebab-case and must be a Markdown file with an 'md' extens
 The document must include at least the following:
 
 - **# Feature: <clear feature name>** with a real description (not a placeholder). For a bug branch, title it **# Bug Fix** and describe the bug — symptom, trigger, and the wrong behavior — instead.
-- **## Tasks** — broken into numbered Tasks, each with detailed numbered Steps and concrete sub-steps/requirements. Reference real modules, classes, and search commands (e.g. `rg -n "..." nc-svc`) wherever possible, include pseudocode, example code, class definitions, procotols, etc.
+- **## Tasks** — broken into numbered Tasks, each with detailed numbered Steps and concrete sub-steps/requirements. Reference real modules, classes, and search commands (e.g. `rg -n "..." nc-svc`) wherever possible, include pseudocode, example code, class definitions, procotols, etc. Prefer code snippets, psuedocode, tables, charts, and diagrams to natural language.
 - **## Acceptance Criteria** — an explicit checklist derived from the conversation with the user, so completion can be verified later.
 
 Respect nc-algorithm norms while writing the plan: keep the service thin (CPU-bound work in workers), inject dependencies rather than constructing them deep in modules, persist through `nc_db`/Postgres, keep every worker consistent on guide/model changes, and plan `pytest` coverage with correct markers (`integration`/`slow`/`svc`).

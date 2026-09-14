@@ -43,6 +43,7 @@ This file is the root instruction file; `CLAUDE.md` is a symlink to it.
     - variable and field names reflect what the variable contains or represents. They typically do not indicate the type with the exception being cases where the type is integral to its purpose (disambiguation, etc)
 
 ## Documentation
+The following section guides persistent documentation, not detailed, ephemeral specs used for feature development. Guidelines for feature specifications is found in the $create-spec skill
 - Documentation should be minimal with a few high-level design documents
     - Should focus on the following:
         - High level goals and guidelines
