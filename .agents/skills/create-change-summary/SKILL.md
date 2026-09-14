@@ -1,34 +1,27 @@
 ---
 name: create-change-summary
-description: Create a PR change summary for the current nc-algorithm branch, and append that summary to the bottom of the branch task file so it records a full history of everything that ACTUALLY changed. Use at the end of work, when the user asks to "create the change summary", "write the PR summary", or "finalize the task file". Produces tmp/PRSummary.md and updates .agents/specs/<branch>.md.
+description: Create the merge-request change summary for a selected feature and save it as `.agents/specs/<feature-name>/change-summary.md`.
 ---
 
-# Create Change Summary (nc-algorithm)
+# Create Change Summary
 
-Produce the PR summary and fold it into the task file so the task file becomes a complete record of
-what actually shipped on this branch.
+Produce a reviewer-facing summary of what actually shipped for one selected feature.
 
-## Step 1 — Create the PR summary
+## Step 1 — Select the feature directory
 
-The summary goes into a PR description, so write it for a reviewer who has not seen the branch:
+Prefer a feature directory or `spec-vN.md` path supplied by the user or current orchestration workflow. The selected directory must be `.agents/specs/<feature-name>/`.
 
-- Write a very short overview paragraph plus 3–6 bullet points outlining the major changes.
-- **Call out startup, infrastructure, or environment changes** that would require a developer/reviewer to start or use the service differently (new/renamed settings in `.env` / `example.env` / `helm/nc-svc/values.yaml`, new Poetry deps, broker/queue changes, Docker/Helm changes, worker replica requirements, etc.).
-- **If database changes occurred** (changes to objects saved via `nc_db`, new top-level persisted classes, schema-version bumps), explicitly note that the reviewer will need to **delete the old database**.
-- Base everything on the real diff — compare this branch against `main`:
-  ```bash
-  git diff main...HEAD
-  git log --oneline main..HEAD
-  git diff --stat main...HEAD
-  ```
-- Save the result to `tmp/PRSummary.md` in this repository (create `tmp/` if needed).
+Do not select by branch alone: a branch may contain multiple feature directories. If the active feature is ambiguous, stop and ask the user which directory to summarize.
 
-## Step 2 — Append the summary to the task file
+## Step 2 — Create the summary
 
-1. Get the branch: `git branch --show-current`; open `.agents/specs/<branch-name>.md`.
-2. Append a **## Change Summary** section at the BOTTOM of the task file containing the same summary (overview, bullets, and the infra/DB notes).
-3. This section is the task file's permanent record of everything that ACTUALLY changed on the branch — make sure it reflects the real diff, not the original intent. If the actual changes diverge from what earlier sections described, the Change Summary reflects reality. If this branch has a sister branch in another repo, note which changes are cross-repo so the two histories stay reconcilable.
+- Compare the branch against its base using `git diff`, `git log`, and `git diff --stat`, then scope the summary to the selected feature.
+- Read the feature's `spec-vN.md` and `review-vN.md` files, but describe the actual diff rather than merely repeating intended work.
+- Write a short overview plus 3–6 bullets covering the major changes.
+- Call out startup, infrastructure, environment, dependency, and data-migration changes that affect reviewers or deployment.
+- If actual changes diverge from the specs, describe what shipped and note the divergence.
+- Save the result to `.agents/specs/<feature-name>/change-summary.md`. If it already exists, update it to reflect the current diff; do not append the summary to a spec.
 
 ## Step 3 — Confirm
 
-Do NOT commit. Report the path to `tmp/PRSummary.md` and confirm the task file now ends with the Change Summary section. If DB changes were noted, restate the "delete the old database" callout so the user doesn't miss it.
+Do NOT commit. Report the `change-summary.md` path and any material divergence, infrastructure action, or migration action the reviewer must not miss.

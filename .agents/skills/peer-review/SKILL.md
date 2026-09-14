@@ -1,6 +1,6 @@
 ---
 name: peer-review
-description: Run a scoped peer review of the implementation of a spec file focusing on the changes and impact from those changes as defined in the associated spec. Then create a peer review comments file at `.agents/specs/<spec-file-name>-pr.md` where <spec-file-name> is the name of the spec file you are reviewing against. Use when the user asks to "peer review", "review this branch", or "run the peer review" or when reviewing the output of an implemenation model. This skill references architecture guidance and documentation that should be considered when reviewing. This skill itself also contains specific guidance about review standards, severity definitions, package-boundary rules, and recurring defect patterns. STRICTLY read-only — it makes NO code changes and NO commits; it only produces the review file.
+description: Run a scoped peer review against `.agents/specs/<feature-name>/spec-vN.md` and write the findings to the matching `review-vN.md`. Use when the user asks to "peer review", "review this branch", or "run the peer review" or when reviewing an implementation agent's output. STRICTLY read-only except for the review file.
 ---
 
 # Peer Review
@@ -28,11 +28,9 @@ If you notice something that begs to be fixed, you still do not fix it — you r
 
 Review the guidance in the [Review Standards](#review-standards) section, all of its descendant sections, and the documents it references 
 
-Review the branch against this guidance, then write every finding to `tmp/xyz-peer-review-comments.md` where xyz is replaced with the issue number from the branch.
-in this repository (create the `tmp/` folder if needed). In particular:
+Resolve the exact `spec-vN.md` being reviewed. Its parent is the active feature directory; write every finding to the matching `.agents/specs/<feature-name>/review-vN.md`. Do not infer the feature directory from the branch when multiple directories may exist. In particular:
 
-- First read the inputs named in **Always Review These Inputs**, plus this branch's task file
-  (`.agents/specs/<branch>.md`) and the modules/tests adjacent to the change.
+- First read the inputs named in **Always Review These Inputs**, the selected `spec-vN.md`, and the modules/tests adjacent to the change.
 - Review against the **Review North Star** priorities
 - Compare this branch against `main` (`git diff main...HEAD`, `git log --oneline main..HEAD`) and look
   for the recurring defect classes in **Common Review Findings To Reuse**.
@@ -48,8 +46,8 @@ Reviewing may read/run focused, read-only checks (e.g. `poetry run pytest -m ...
 
 ## Step 2 — Note the issues in the peer review comments file
 
-1. Get the branch: `git branch --show-current`; open `tmp/xyz-peer-review-comments.md` where xyz is the issue number from the branch.
-2. Write issues to the tmp/xyz-peer-review-comments.md file using the guidance outlined below
+1. Resolve the selected `.agents/specs/<feature-name>/spec-vN.md` and its matching `review-vN.md` output path.
+2. Write issues only to that `review-vN.md` using the guidance outlined below. If it already exists, stop and ask before overwriting it.
 3. Include a summary in the file
 4. Your tone should be technical and very concise where findings and/or fixes are obvious or trivial
 5. For minor, major, and critical issues remain concise but provide more context and justification

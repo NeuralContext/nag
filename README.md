@@ -15,7 +15,7 @@ AI has exploded the world of software development (we mean this in a good way). 
 | Path | What's in it |
 | --- | --- |
 | [`.agents/skills/`](.agents/skills/) | Skills and other agent-specific instructions for AI. |
-| `.agents/specs/` | Working specs created during development; added when needed. |
+| `.agents/specs/<feature-name>/` | A feature's versioned specs, peer reviews, and change summary. |
 | [`.codex/`](.codex/) | Configuration for this repository that is also reusable in other repositories. |
 | [`AGENTS.md`](AGENTS.md) | Shared repository guidance for coding agents. |
 | [`README.md`](README.md) | You are here. Bootstrapping and process information for bipeds with large organic neural networks. |
@@ -54,8 +54,8 @@ This is how we achieve high-quality code at a reasonable speed and price.
 
 ### Adding to an Existing Repo
 
-1. Copy `.agents/` and `.codex/` into the root of the target repository. If either folder already exists, merge the contents so you preserve the repo's existing skills and configuration.
-2. Copy `AGENTS.md` if the target repo doesn't have one. Otherwise, merge the relevant guidance into its existing file.
+1. Copy `.agents/` and `.codex/` into the root of the target repository. If either folder already exists, merge the contents so you preserve the repo's existing skills and configuration. Keep `.agents/NAG-AGENTS.md` as shared NAG guidance and put repository-specific NAG skill settings in `.agents/NAG-CONFIG.md`.
+2. Copy `AGENTS.md` if the target repo doesn't have one. Otherwise, merge its small NAG bootstrap section into the target's existing guidance.
 3. Open Codex in the target repository and select a high-tier model for architecture and orchestration. Review the copied `.codex/` configuration, including the implementation model in `.codex/agents/implementer.toml`, for your environment.
 4. Run `$update-agent-guidance` to align the guidance and skills with the target repository's language, tooling, and conventions.
 5. Review the updated guidance and resolve any missing references before starting development.
@@ -81,10 +81,13 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    - Create a branch with the issue number at the start (e.g. `134-fix-all-the-broken-stuff`)
    - Start Codex with a high-tier model (e.g. 5.6-sol or astra)
    - Run `$create-spec`.
-      - Optionally include a desired filename and a brief description of the goal of the spec (or as much detail as you want)
+      - Prefer creating `.agents/specs/<feature-name>/` first or supplying the name to the skill when you start it (e.g. `$create-spec 10-add-test-metrics`).
+      - Use a kebab-case name such as `10-feature-description`, normally beginning with the issue identifier.
+      - One branch may have multiple feature directories, such as `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
+      - If no directory or name is supplied, `$create-spec` uses a single uninitialized directory the user already created. If there are several, it asks which one to use. If there are none, it proposes a name from the branch and requested work and asks for confirmation before creating it.
 2. **Architect + Developer:** 
    - Work together to define the scope and acceptance criteria
-   - Architect  agent writes the initial spec in `.agents/specs/`
+   - Architect agent writes `.agents/specs/<feature-name>/spec-v1.md`.
    - Developer answers questions and approves it before implementation.
 3. **Developer:** Run `$architect-and-orchestrate` and point it to the approved spec.
 4. **Architect:** Delegate the spec to an implementation agent.
@@ -99,10 +102,26 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    | 5 | `$run-tests` | Run the required test suites. |
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
-6. **Implementer:** Prepare visualizations for developer review with `$test-dashboard` and `$mermaid-visualizer` when available.
-7. **Architect:** Run `$peer-review` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
-8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the developer.
-9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to record what actually changed.
+6. **Architect:** Run `$peer-review` against `spec-v1.md` and save its findings as `review-v1.md` in the same feature directory. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
+7. **Architect + Implementer:** If the review doesn't meet the threshold, create `spec-v2.md`, delegate the fixes, and write the next review to `review-v2.md`. Continue pairing `spec-vN.md` with `review-vN.md` until the review threshold is met and implementation is complete. Bring material design decisions back to the developer.
+8. **Implementer:** After the iterative spec, implementation, validation, and peer-review loop is complete, prepare final visualizations for developer review with `$test-dashboard` and `$mermaid-visualizer` when available. If producing a visualization identifies a required code or test change, return to the iterative loop and regenerate the visualizations only after the new final review passes.
+9. **Architect:** Report the completed scope, validation results, visualization artifacts, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to write `<feature-directory>/change-summary.md`.
+
+### Feature artifact lifecycle
+
+Specs, reviews, and the change summary stay available in their feature directory throughout development and merge-request review. The selected feature directory—not the branch—is the workflow context, so a branch can carry several independent feature-spec sequences.
+
+```text
+.agents/specs/
+└── 10-feature-description/
+    ├── spec-v1.md
+    ├── review-v1.md
+    ├── spec-v2.md
+    ├── review-v2.md
+    └── change-summary.md
+```
+
+After merge, treat the directory as frozen historical context. Do not maintain it or include it in general agent context and repository audits. Read it only when explicitly requested or when investigating that feature's history. It may be deleted later at the user's request; do not move completed features into a separate `history/` directory.
 
 ### Skills
 
@@ -122,4 +141,4 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 | `$test-dashboard` | Visualize test results for developer review. | Agent | **Yes** |
 | `$mermaid-visualizer` | Create diagrams for developer review. | Agent | **Yes** |
 | [`$peer-review`](.agents/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
-| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write a PR summary and append it to the task file. | Developer | No |
+| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write the feature's final `change-summary.md` for merge-request review. | Developer | No |

@@ -7,20 +7,22 @@ description: Create a specification file that a lower-tier agent can use to impl
 
 Generate a specification file that a lower tier agent can use to implement a change. If you are uncertain, if something is unclear, if you see missing items, or if you have security or design concerns about the content, ask the user. Work with the user to create the spec.
 
-## Step 1 — Establish a Filename for the Spec
-The filename must use kebab-case and must be a Markdown file with an 'md' extension.
-1. Preferred Approach
-   - If the user provides a filename use it
-   - If the user does not provide a filename but a concise filename can reasonably be extracted by what the text they've provided, use this name and prompt to ensure the user accepts the name
-2. Secondary Approach
-   - If the user does not provide sufficient information to determine a filename, use the branch information:
-      - Get the current branch name:
-         ```bash
-         git branch --show-current
-         ```
-      - Create a filename that includes the first section of the branch name (typically the issue number) and a kebab-case description of the task composed of no more than 6 words based on the branch name.
-         - Example: `.agents/specs/123-fix-concurrency-bugs.md`
-3. If a file already exists at the path, STOP and ask the user whether to overwrite, append, update, or provide a new filename or abort. Never silently clobber an existing spec file.
+## Step 1 — Establish the feature directory
+
+Each independent feature uses `.agents/specs/<feature-name>/`, even when multiple features are developed on the same branch. The initial output is always `spec-v1.md` in that directory.
+
+1. Prefer a feature directory the user explicitly supplied.
+2. If the user supplies only a feature name, validate that it is kebab-case, normally begins with the issue identifier, and create `.agents/specs/<feature-name>/`.
+3. If the user supplies neither, list only the immediate children of `.agents/specs/`; do not read completed feature contents during discovery:
+   - if exactly one directory does not contain `spec-v1.md`, use it as the user-created feature directory;
+   - if several directories do not contain `spec-v1.md`, stop and ask which one to use;
+   - if none qualify, continue to the next step.
+4. When no directory or name is available:
+   - inspect `git branch --show-current` and the requested work;
+   - derive a concise candidate such as `10-feature-description` with no more than six descriptive words after the issue identifier; the number prefix should align with the number prefix of the branch (the issue number in version control). 
+   - stop and ask the user to accept the candidate or provide another name before creating the directory.
+5. Do not treat the branch name as the entire feature identifier. Multiple valid feature directories could start with the same issue number / branch prefix (examples: `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`).
+6. If `spec-v1.md` already exists, stop and ask whether to update it, use another feature directory, or abort. Never silently overwrite an existing spec.
 
 ## Step 2 — Gather context
 
@@ -43,4 +45,4 @@ Respect nc-algorithm norms while writing the plan: keep the service thin (CPU-bo
 
 ## Step 4 — Save and confirm
 
-Write the file. Do NOT commit. Report the path back to the user and give a one-line summary of the Tasks and Acceptance Criteria captured.
+Write `.agents/specs/<feature-name>/spec-v1.md`. Do NOT commit. Report the path and selected feature directory to the user and give a one-line summary of the Tasks and Acceptance Criteria captured.

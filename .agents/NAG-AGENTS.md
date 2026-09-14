@@ -4,7 +4,7 @@ Apply instructions in this order:
 
 1. Platform safety, security, and permission restrictions
 2. Active AGENTS.md and AGENTS.override.md instructions
-3. Repository-specific `.agents/nag-config.md` instructions
+3. Repository-specific `.agents/NAG-CONFIG.md` instructions
 4. General requirements in this file
 5. Individual NAG skill defaults
 
@@ -25,11 +25,43 @@ If you are requested to "only" or "exclusively" or "just" review one or more art
 ## Agent resources — `.agents/`
 
 `.agents/` contains agent-facing material, shared by every coding agent:
-- `.agents/specs/` — spec files relevant to the current feature under development. These are ephemeral and will be removed after each feature is completed.
+- `.agents/specs/<feature-name>/` — one feature's versioned specs, peer reviews, and change summary. A branch may contain multiple feature directories.
 - `.agents/skills/` — the skills both agents load, each self-contained. Codex reads this path natively; `.claude/skills` is a symlink to it so Claude Code sees the same files. Edit skills here only, never through the symlink's own path.
-- `.agents/nag-config.md` - a configuration file containing repository-specific information for Nag skills. When invoking a Nag skill read `.agents/nag-config.md` prior to executing the skill. Repository specific instructions in the nag-config.md file are higher priority and may provide exclusions, clarifications, or overrides to base Nag skills.
+- `.agents/NAG-CONFIG.md` - repository-specific information for NAG skills. Read it before invoking a NAG skill and apply the corresponding section.
 
 This file is the root instruction file; `CLAUDE.md` is a symlink to it.
+
+## Feature specification workspaces
+
+Each independently scoped feature uses its own directory even when several features are developed on the same branch:
+
+```text
+.agents/specs/10-feature-description/
+├── spec-v1.md
+├── review-v1.md
+├── spec-v2.md
+├── review-v2.md
+└── change-summary.md
+```
+
+The active feature directory is established by the current workflow, not inferred from the branch alone:
+
+1. Prefer a directory the user explicitly supplied.
+2. If the user supplies a feature name, create `.agents/specs/<feature-name>/`.
+3. Otherwise, list only the immediate children of `.agents/specs/` without reading their contents. If exactly one directory has no `spec-v1.md`, treat it as the user-created feature directory. If several qualify, ask the user which to use.
+4. If no uninitialized directory exists, derive a kebab-case candidate such as `10-feature-description` from the branch and requested work, then ask the user to confirm or replace it before creating the directory.
+
+Feature names should begin with the issue identifier when one is available. Different directories may share that identifier, for example `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
+
+Keep the selected directory in context throughout `$create-spec`, `$architect-and-orchestrate`, `$peer-review`, and `$create-change-summary`. Do not switch directories based only on the current branch. If more than one directory could apply and the current workflow did not identify one, ask the user which to use.
+
+Specs and reviews remain available throughout feature development and merge-request review. After merge, the directory is frozen historical context:
+
+- do not update or maintain it;
+- exclude it from general agent context and repository audits;
+- read it only when explicitly requested or when investigating that feature's history.
+
+A frozen feature directory may be deleted when the user requests cleanup.
 
 ## Nag Skill Identification and Configuration
 - Nag skills are identified by the `metadata.nag` field in the skill's frontmatter YAML
@@ -38,15 +70,14 @@ This file is the root instruction file; `CLAUDE.md` is a symlink to it.
         metadata:
             nag: true
         ```
-- Repository specific instructions, exclusions, references, and overrides for nag skills are found in `.agents/nag-config.md`
+- Repository specific instructions, exclusions, references, and overrides for NAG skills are found in `.agents/NAG-CONFIG.md`
 
 ## Testing Instructions
-- Use the $test-code Nag skill to execute tests
-- $test-code should always be executed after modifying any production code, production code data inputs, or test code.
-- Ask the user if $test-code should be run when modifying non-production scripts, or other code that doesn't impact production. It is okay to carry some broken tests forward if a larger feature is split across multiple specs and the user has specifically requested this.
-- If $test-code outputs errors, fix them before considering your task complete
-    - If the $test-code errors are pre-existing or were not initiated on this branch / by the user or by you, ask the user how to proceed
-- 
+- Use the `$run-tests` NAG skill to execute tests.
+- `$run-tests` should always be executed after modifying any production code, production code data inputs, or test code.
+- Ask the user if `$run-tests` should be run when modifying non-production scripts or other code that doesn't impact production. It is okay to carry some broken tests forward if a larger feature is split across multiple specs and the user has specifically requested this.
+- If `$run-tests` outputs errors, fix them before considering your task complete.
+    - If the `$run-tests` errors are pre-existing or were not initiated on this branch, by the user, or by you, ask the user how to proceed.
 
 ## Code and Comment Expectations
 - Code should be self-documenting. Classes and functions should be focused, with concise but expalanatory names.

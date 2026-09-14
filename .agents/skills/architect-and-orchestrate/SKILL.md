@@ -11,6 +11,8 @@ Act as the architect and orchestrator, not the primary implementation worker. Pr
 
 Start from the approved spec supplied by the user when available; preserve its scope and approval rather than recreating it. Otherwise, work with the user to establish the smallest implementable scope and create the initial spec with `$create-spec` when available.
 
+The parent of the approved `spec-vN.md` is the active feature directory. Keep that directory explicit throughout the workflow; never switch or select a feature based only on the branch because one branch may contain multiple feature directories.
+
 Confirm that repository setup is complete and the current branch starts with the issue number (for example, `134-fix-all-the-broken-stuff`), as described in the README process. Report missing prerequisites without silently changing branches or repository configuration.
 
 - Summarize the intended outcome, affected areas, acceptance criteria, constraints, and assumptions.
@@ -30,11 +32,11 @@ If other skill dependencies are missing, provide a warning to the user and conti
 
 An installed skill with a failed check or a missing prerequisite is not an absent skill: follow its instructions and report unresolved failures honestly.
 
-If a skill dependency is present, you must use it within the spec, implement, review loop (step 3) below. You are not allowed to skip skill dependencies that are present.
+If a skill dependency is present, you must use it at the stage assigned below. Validation and review skills run inside the iteration loop; visualization skills run only after that loop completes. You are not allowed to skip skill dependencies that are present.
 
 ## Spec, implement, review loop
 
-Use `$create-spec` to create each new implementation spec. Follow its naming guidance exactly for the first spec. For every later spec, retain that base name and append a version suffix at the end (for example, `feature-name-v2.md`), using the convention prescribed by `$create-spec`. Preserve existing files and approved specs.
+Use `$create-spec` to establish `.agents/specs/<feature-name>/spec-v1.md`. For every later iteration, increment the filename in the same directory (`spec-v2.md`, `spec-v3.md`, and so on). Preserve existing specs and pair each iteration with the matching peer review (`review-v1.md`, `review-v2.md`, and so on).
 
 For each iteration:
 
@@ -51,23 +53,28 @@ For each iteration:
    | 5 | `$run-tests` | Run required test suites. |
    | 6 | `$dead-code-cleanup` | Verify and remove unused code introduced by current changes or when the spec has a dead-code objective. |
 
-4. Have the implementer prepare human-review visualizations with `$test-dashboard` and `$mermaid-visualizer` when available. Refresh affected visualizations in subsequent iterations.
-5. Run `$peer-review` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
-6. Triage the review. Address every critical and major/high-severity issue through delegated fixes. For a medium-or-higher risk design decision that is important and not clearly determined by the agreed scope or codebase, pause and ask the user for direction; present the decision, options, recommendation, and consequence of deferring it.
-7. If the review threshold is not met, create the next versioned spec addressing the non-trivial findings and delegate it. Reuse the same lower-tier agent when practical; otherwise spawn another lower-tier implementation agent. Repeat implementation, validation, visualization, and review.
+4. Run `$peer-review` when available against the resulting implementation and current spec. Preserve and capture its output as that skill requires, including issue severity and supporting evidence. Automated checks do not replace review judgment.
+5. Triage the review. Address every critical and major/high-severity issue through delegated fixes. For a medium-or-higher risk design decision that is important and not clearly determined by the agreed scope or codebase, pause and ask the user for direction; present the decision, options, recommendation, and consequence of deferring it.
+6. If the review threshold is not met, create the next versioned spec addressing the non-trivial findings and delegate it. Reuse the same lower-tier implementation agent when practical; otherwise spawn another. Repeat implementation, validation, and review.
 
 Repeat the loop until the review has no critical or major/high issues and at most three minor issues remain. Treat `Major` and `High` as blocking severities. Trivial issues may be recorded but do not require another iteration. Do not claim completion without the final review result and required validation results; disclose any gaps from unavailable skills.
+
+## Prepare final visualizations
+
+Only after the iterative spec, implementation, validation, and peer-review loop is complete, have the implementer generate human-review visualizations with `$test-dashboard` and `$mermaid-visualizer` when available. Do not generate or refresh these artifacts during intermediate iterations.
+
+If visualization work identifies a required code or test change, resume the iteration loop, rerun affected validation and peer review, and regenerate the final visualizations after the new final review meets the threshold.
 
 ## Delegation and reporting
 
 - Use lower-tier models for implementation and routine fix passes; reserve the frontier model for scoping, architecture, spec writing, review interpretation, and user-facing decisions.
 - After every implementation/review cycle, give the user a concise status update: spec version, what changed, validation performed, review counts by severity, and any decision needed from them.
-- On completion, report the final implemented scope, validation results, visualization artifacts, final review counts, accepted minor issues, and missing skills or unresolved validation gaps.
+- On completion, report the active feature directory, every spec/review pair, final implemented scope, validation results, visualization artifacts, final review counts, accepted minor issues, and missing skills or unresolved validation gaps.
 - When the user requests PR preparation through `$create-change-summary`, use it if available to record what actually changed. Existing authorization is sufficient; otherwise leave this as a user-requested handoff, as in the README process. Apply the same discovery and warning behavior if the skill is missing.
 
 ## Items to Exclude From Context
 The following files/folders should be excluded from general context gathering by the architect-orchestrator and by any sub-agents implementing changes. Access specific files when explicitly requested by the user or required as inputs or outputs by an active dependency skill (for example, review or summary artifacts in `tmp/`); this does not authorize browsing the whole excluded directory. For other required access, ask the user for permission. All of the following are relative to the repository root.
-- .agents/specs/history
+- All `.agents/specs/` feature directories except the explicitly selected active feature directory
 - tmp/
 - dist/
 - node_modules/
