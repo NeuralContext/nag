@@ -1,18 +1,35 @@
+# NAG Agent Guidance
+
 ## Instruction precedence
 
 Apply instructions in this order:
 
-1. Platform safety, security, and permission restrictions
-2. Active AGENTS.md and AGENTS.override.md instructions
-3. Repository-specific `.agents/NAG-CONFIG.md` instructions
-4. General requirements in this file
-5. Individual NAG skill defaults
+1. Platform safety, security, and permission restrictions.
+2. Active `AGENTS.md` and `AGENTS.override.md` files.
+3. Repository-specific `.agents/NAG-CONFIG.md` instructions.
+4. The shared defaults in this file.
+5. The active skill's skill-specific defaults.
 
-A more specific instruction overrides a general instruction.
-
-Requirements explicitly marked `NAG invariant` cannot be relaxed by
-repository configuration. If an instruction conflict remains ambiguous,
+Active repository guidance may override NAG defaults. It may not override a
+requirement explicitly marked **NAG invariant**. If a conflict is ambiguous,
 stop and ask the user.
+
+## Shared skill preflight
+
+Before using any NAG skill:
+
+1. Find the repository root and read all active `AGENTS.md` guidance.
+2. Read `<repo-root>/.agents/NAG-AGENTS.md`.
+3. Read `<repo-root>/.agents/NAG-CONFIG.md`.
+4. Apply the configuration section for the active skill, if present.
+5. If a required file or setting is missing, use the fallbacks below and
+   report the gap. Never invent a destructive, networked, or expensive command.
+
+## Goals and Principles
+1. Code is the primary source of documentation.
+2. Deterministic checks and metrics provide guardrails for all agent-based development.
+3. Orchestrate iterative development between higher-tier architect/orchestrator models and lower-tier implementation models.
+4. Use high-level visualizations for developer review.
 
 ## Reference Material
 If you are requested to "only" or "exclusively" or "just" review one or more artifacts, only review those. If you are not provided with explicit guidance on what to review before starting, review all of the files in the docs/design folder and adhere to all of the design, architecture, guidance, constraints, process, and goals outlined in those documents.
@@ -31,12 +48,27 @@ If you are requested to "only" or "exclusively" or "just" review one or more art
 
 This file is the root instruction file; `CLAUDE.md` is a symlink to it.
 
+## Repository context and design documents
+
+Use the design-document path in `.agents/NAG-CONFIG.md`. If it is absent, use
+`docs/design/`. Read maintained design documentation relevant to the requested
+work unless the user gives a narrower scope.
+
+If the configured/default directory does not exist, continue with maintained
+documentation available elsewhere in the repository and report the missing
+reference. An absent design directory is a gap, not a reason to fabricate
+guidance or halt otherwise safe work.
+
+Exclude generated/build/dependency directories and frozen feature histories
+from general context. Read an excluded path only when the user selects it or a
+workflow requires a specific file from it.
+
 ## Feature specification workspaces
 
-Each independently scoped feature uses its own directory even when several features are developed on the same branch:
+Each independent feature uses `.agents/specs/<feature-name>/`:
 
 ```text
-.agents/specs/10-feature-description/
+.agents/specs/<feature-name>/
 ├── spec-v1.md
 ├── review-v1.md
 ├── spec-v2.md
@@ -72,12 +104,42 @@ A frozen feature directory may be deleted when the user requests cleanup.
         ```
 - Repository specific instructions, exclusions, references, and overrides for NAG skills are found in `.agents/NAG-CONFIG.md`
 
-## Testing Instructions
-- Use the `$run-tests` NAG skill to execute tests.
-- `$run-tests` should always be executed after modifying any production code, production code data inputs, or test code.
+## Test execution and artifacts
+
+Use `$run-tests` after changing production code, production data inputs, or
+tests. For tooling/documentation-only changes, follow the invoking task's
+validation authorization or ask before running costly repository suites.
+
 - Ask the user if `$run-tests` should be run when modifying non-production scripts or other code that doesn't impact production. It is okay to carry some broken tests forward if a larger feature is split across multiple specs and the user has specifically requested this.
 - If `$run-tests` outputs errors, fix them before considering your task complete.
     - If the `$run-tests` errors are pre-existing or were not initiated on this branch, by the user, or by you, ask the user how to proceed.
+
+The canonical tiers are `fast`, `slow`, and `very_slow`. Run configured `fast`
+before configured `slow`, in separate commands. **NAG invariant:** never run
+`very_slow` without explicit approval from the user in the current workflow.
+Missing tier commands are visible validation gaps.
+
+NAG's generic integration-test preference is real infrastructure. The active
+repository owns all mock exceptions and infrastructure policy in
+`.agents/NAG-CONFIG.md` or active `AGENTS.md` guidance.
+
+Write generated NAG artifacts only to the configured repository-local artifact
+path. **NAG invariant:** reject artifact destinations outside the repository
+root. Do not open GUI applications without an explicit user request and any
+required environment approval.
+
+## Change and validation boundaries
+
+- **NAG invariant:** do not commit, stage, push, create a PR, or change branches
+  unless the user explicitly authorizes that action.
+- Keep changes within the approved task and preserve unrelated user changes.
+- Diagnose failures before editing. Fix them only when the task authorizes code
+  changes; otherwise report them.
+- Treat unavailable or inapplicable skills honestly. Do not install frameworks
+  or dependencies without authorization.
+- Prefer existing repository scripts and configuration over generic commands.
+- Use recoverable operations and obtain approval for destructive, networked,
+  expensive, or externally visible actions when required.
 
 ## Code and Comment Expectations
 - Code should be self-documenting. Classes and functions should be focused, with concise but expalanatory names.
