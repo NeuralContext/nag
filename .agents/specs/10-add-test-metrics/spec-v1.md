@@ -112,8 +112,11 @@ The distributed template must explain that angle-bracket values are placeholders
 5. Update all tracked references and verify no stale lowercase filename remains:
 
    ```bash
-   rg -n "nag-(agents|config)\.md|NAG-(AGENTS|CONFIG)\.md" AGENTS.md README.md .agents
+   rg -n "nag-(agents|config)\.md" \
+     AGENTS.md README.md .agents/NAG-AGENTS.md .agents/NAG-CONFIG.md .agents/skills
    ```
+
+   This command must not search `.agents/specs/`, where migration instructions may intentionally name the old files.
 
 ### Task 2: Add the canonical `$run-tests` skill
 
@@ -188,29 +191,54 @@ The distributed template must explain that angle-bracket values are placeholders
    - allow multiple feature directories with the same issue identifier on one branch;
    - pair `spec-vN.md` with `review-vN.md` and write `change-summary.md` in the same directory;
    - keep the selected directory explicit throughout the workflow rather than rediscovering it from the branch.
-7. Keep the obsolete `.agents/skills/update-agent-guidance.tar` deleted and remove any remaining references to it. The source directory is the only supported form of this skill.
-8. Validate frontmatter and preflight coverage across every skill:
+7. Make `$create-change-summary` safe on branches containing multiple feature directories:
+   - use the selected feature's specs and reviews to identify the intended scope;
+   - inspect the complete branch diff, but include only changes clearly attributable to the selected feature;
+   - label shared changes as cross-feature and identify the other affected feature directories when known;
+   - ask the user rather than guessing when a changed file or hunk cannot be attributed confidently;
+   - state in `change-summary.md` that it is feature-scoped rather than a complete branch summary when other feature directories exist.
+8. Keep the obsolete `.agents/skills/update-agent-guidance.tar` deleted and remove any remaining references to it. The source directory is the only supported form of this skill.
+9. Validate frontmatter and preflight coverage across every skill:
 
    ```bash
    find .agents/skills -mindepth 2 -maxdepth 2 -name SKILL.md -print
-   rg -L "nag: true" .agents/skills/*/SKILL.md
-   rg -L "NAG-AGENTS\.md" .agents/skills/*/SKILL.md
-   rg -L "NAG-CONFIG\.md" .agents/skills/*/SKILL.md
+   rg --files-without-match "nag: true" .agents/skills/*/SKILL.md
+   rg --files-without-match "NAG-AGENTS\.md" .agents/skills/*/SKILL.md
+   rg --files-without-match "NAG-CONFIG\.md" .agents/skills/*/SKILL.md
    ```
 
 ### Task 4: Incorporate `$test-dashboard` as an optional visualization skill
 
-1. Add `.agents/skills/test-dashboard/` using the reviewed upstream source at `https://github.com/foomoon/test-dashboard` and record:
+1. Add `.agents/skills/test-dashboard/` from the reviewed upstream source at `https://github.com/foomoon/test-dashboard`, pinned to commit `7918df2e30b643d1d31f009abf43355fc8c3bc9d`, and record:
    - upstream URL;
-   - imported commit SHA;
+   - imported commit SHA (`7918df2e30b643d1d31f009abf43355fc8c3bc9d`);
    - import date;
    - local modifications;
    - the project decision to treat the imported source as MIT-licensed, including the applicable MIT license notice;
-   - upstream provenance and local modifications.
+   - upstream provenance.
 2. Preserve the upstream deterministic Python implementation and its requirements (`pytest`, coverage/pytest-cov, and `radon`). Do not claim Node/Vitest support.
 3. Adapt its `SKILL.md` to the common NAG metadata and preflight contract.
-4. Replace home-directory output (`~/.agent/diagrams/test-dashboard.html`) with the configured repository-local path, defaulting to `tmp/test-dashboard.html`.
-5. Make applicability explicit:
+4. Define an explicit repository-local output interface:
+   - add `--out PATH` to `export_test_dashboard_data.py` and default it to `<repo-root>/tmp/test-dashboard-data.json`;
+   - continue using the generator's existing `--data PATH` and `--out PATH` arguments, but change its default HTML path from `~/.agent/diagrams/test-dashboard.html` to `<repo-root>/tmp/test-dashboard.html`;
+   - create missing parent directories for configured outputs;
+   - reject configured output paths that resolve outside the repository root;
+   - have the skill resolve `.agents/NAG-CONFIG.md` and always pass both paths explicitly:
+
+     ```bash
+     <detected-python> scripts/export_test_dashboard_data.py \
+       --out <repo-root>/tmp/test-dashboard-data.json
+     <detected-python> scripts/generate_test_dashboard.py \
+       --data <repo-root>/tmp/test-dashboard-data.json \
+       --out <repo-root>/tmp/test-dashboard.html
+     ```
+
+5. Make test failure unambiguous:
+   - `export_test_dashboard_data.py` must print the captured pytest output and exit nonzero when its instrumented pytest run fails;
+   - it must not publish a new final JSON snapshot after a failed test run;
+   - `$test-dashboard` must report `failed` and must not report an existing or partially generated dashboard as current;
+   - successful JSON/HTML writes must replace their destination only after generation completes, so a partial write is never presented as a current artifact.
+6. Make applicability explicit:
 
    ```text
    if NAG-CONFIG disables dashboard:
@@ -223,9 +251,9 @@ The distributed template must explain that angle-bracket values are placeholders
        generate dashboard and report output path
    ```
 
-6. Do not automatically open a GUI application. Generate the artifact and provide a clickable path; opening it requires an explicit user request and any environment approval.
-7. Keep generated data and HTML ignored unless the repository configuration explicitly requires versioning them. Do not hand-edit generated JSON/HTML.
-8. Validate the vendored scripts in a temporary Python/pytest fixture when dependencies are available. The check must demonstrate that the configured output is created and that a failing test produces an honest incomplete/failure status.
+7. Do not automatically open a GUI application. Generate the artifact and provide a clickable path; opening it requires an explicit user request and any environment approval.
+8. Keep generated data and HTML ignored unless the repository configuration explicitly requires versioning them. Do not hand-edit generated JSON/HTML.
+9. Validate the vendored scripts in a temporary Python/pytest fixture when dependencies are available. The check must demonstrate that configured JSON and HTML outputs are created after a passing suite, paths outside the repository are rejected, and a failing suite exits nonzero without publishing a new final snapshot.
 
 ### Task 5: Integrate tests and visualizations into `$architect-and-orchestrate`
 
@@ -271,9 +299,9 @@ The distributed template must explain that angle-bracket values are placeholders
    ```bash
    git diff --check
    rg -n "nag-(agents|config)\.md|\$test-code|very_fast" AGENTS.md README.md .agents/NAG-AGENTS.md .agents/NAG-CONFIG.md .agents/skills
-   rg -L "nag: true" .agents/skills/*/SKILL.md
-   rg -L "NAG-AGENTS\.md" .agents/skills/*/SKILL.md
-   rg -L "NAG-CONFIG\.md" .agents/skills/*/SKILL.md
+   rg --files-without-match "nag: true" .agents/skills/*/SKILL.md
+   rg --files-without-match "NAG-AGENTS\.md" .agents/skills/*/SKILL.md
+   rg --files-without-match "NAG-CONFIG\.md" .agents/skills/*/SKILL.md
    ```
 
    The stale-name searches must return no matches; the missing-metadata/preflight searches must return no skill files.
@@ -303,10 +331,12 @@ The distributed template must explain that angle-bracket values are placeholders
 - [ ] Design-document discovery defaults to `docs/design/`, honors configuration, and degrades explicitly when the directory is absent.
 - [ ] `$peer-review` has one consistent output path and portable review-standards discovery.
 - [ ] `$create-spec`, `$architect-and-orchestrate`, `$peer-review`, and `$create-change-summary` consistently use `.agents/specs/<feature-name>/{spec-vN.md,review-vN.md,change-summary.md}` without assuming one feature per branch.
+- [ ] `$create-change-summary` attributes only selected-feature changes, labels shared changes as cross-feature, and asks rather than guessing when attribution is ambiguous.
 - [ ] Completed feature directories are documented as frozen, excluded from general context and audits, and readable only by explicit request or historical investigation.
 - [ ] `$update-agent-guidance` resolves NAG configuration placeholders and skill applicability for the target repository.
 - [ ] The obsolete `update-agent-guidance.tar` artifact and all references to it are removed.
-- [ ] `$test-dashboard` is vendored under the project's MIT-license assumption with pinned upstream provenance, is labeled Python/pytest-only, writes to a configured repository-local ignored path, and does not open a GUI automatically.
+- [ ] `$test-dashboard` is vendored from commit `7918df2e30b643d1d31f009abf43355fc8c3bc9d` under the project's MIT-license assumption and is labeled Python/pytest-only.
+- [ ] Dashboard export and generation accept explicit repository-local output paths, write snapshots atomically, reject paths outside the repository, and exit/report failure without publishing a new snapshot when pytest fails.
 - [ ] `$architect-and-orchestrate` runs configured `fast` and `slow` suites in each relevant iteration, gates `very_slow`, waits until the iterative peer-review loop is complete before generating final visualizations, and reports validation gaps honestly.
 - [ ] The orchestrator's final output table includes specs, test results, dashboard status/path, peer-review results, and PR-summary status.
 - [ ] README installation and workflow instructions use the final uppercase filenames, canonical skill names, configuration schema, and portability rules.
