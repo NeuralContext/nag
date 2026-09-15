@@ -1,51 +1,55 @@
 ---
 name: update-agent-guidance
-description: Audit and update repository AGENTS.md and .agents/skills so their guidance, references, and language-specific commands match the current codebase.
+description: Audit repository guidance and resolve portable NAG configuration, paths, commands, and skill applicability.
+metadata:
+  nag: true
 ---
 
 # Update Agent Guidance
 
-Bring `AGENTS.md` and every skill below `.agents/skills/` into alignment with the repository without expanding their scope or changing application code just to satisfy an instruction.
+Align repository-owned guidance and `.agents/NAG-CONFIG.md` with the actual
+repository without changing application code to satisfy instructions.
 
-## Discover the repository and its conventions
+## NAG preflight
 
-1. Find the repository root and read every applicable `AGENTS.md` file before making any edits. Treat those files as guidance to audit as well as instructions to follow.
-2. Inventory every `AGENTS.md` in scope and every `SKILL.md` below `.agents/skills/`, including resources each skill links to. Treat each skill directory as a unit.
-3. Establish the repository's current sources of truth:
-   - language and package manifests (for example `pyproject.toml`, `package.json`, `Cargo.toml`, `go.mod`, `.sln`, `pom.xml`, or `build.gradle`);
-   - task scripts, CI workflows, formatter/linter/test configuration, and documented developer commands;
-   - maintained repository documentation, especially top-level docs and docs nearest to the affected component.
+Read all active `AGENTS.md` guidance, `<repo-root>/.agents/NAG-AGENTS.md`, and
+`<repo-root>/.agents/NAG-CONFIG.md`. Apply the `$update-agent-guidance` section.
+If a required file or setting is missing, follow `NAG-AGENTS.md` fallback
+behavior and report the gap.
 
-Do not infer tooling from a skill's old command. Prefer existing project scripts or documented commands, then the language's configured standard tools. Preserve intentionally multi-language repositories and scope a command to the component it serves.
+## Discover sources of truth
 
-## Review and update each skill
+Inventory applicable `AGENTS.md`, all `.agents/skills/*/SKILL.md` files and
+their required local resources, language/package manifests, task scripts, CI,
+formatter/linter/test configuration, and maintained documentation. Prefer
+existing repository scripts and documented commands. Preserve multi-language
+components and their package managers.
 
-For `AGENTS.md` and each skill:
+## Resolve NAG configuration
 
-1. Check every path, command, script name, configuration file, environment variable, service name, and named workflow it references. Remove or replace references that are demonstrably stale. Do not remove a reference merely because it is external, optional, or unavailable in the current shell.
-2. Add a short link or path to repository documentation only when it gives a user of that skill necessary, maintained guidance. Use the most specific existing documentation; do not create documentation or duplicate its contents just to add a link.
-3. Update language-specific commands to commands actually supported by the component. Examples: a JavaScript/TypeScript project may use `npm run lint` and `npm test`; a Rust project may use `cargo fmt --check`, `cargo clippy`, and `cargo test`. Preserve project package-manager choices and existing CI commands rather than substituting generic equivalents.
-4. Keep instructions concise, preserve user-facing behavior and approval boundaries, and avoid unrelated edits. Do not add placeholders, speculative commands, or references to files that do not exist.
+Populate `.agents/NAG-CONFIG.md` with verified values for:
 
-## Approval gate
+- design documentation, artifact, review-standard, and ADR paths;
+- separate `fast`, `slow`, and `very_slow` commands, marking missing tiers
+  unconfigured rather than inventing commands;
+- test framework, integration infrastructure, and allowed mocks;
+- `$test-dashboard` enablement and repository-local data/HTML outputs;
+- update each language-dependent skill's `Enabled` metadata to `yes` or `no` and state the reason if set to `no`.;
+- repository-specific overrides that do not belong in portable skills.
 
-Before applying a proposed change, ask the user for explicit permission and wait if any change:
+Resolve all angle-bracket placeholders for affected skills. Prefer poetry, uv, npm or other framework scripts over direct test executables and never install or require Vitest merely because the repository uses npm. Never translate a required Python script into another language. If Python availability for an enabled Python-dependent skill cannot be established safely, report the unresolved applicability decision rather than deleting or silently rewriting the skill.
 
-- has a moderate or higher risk of breaking behavior, workflows, or developer tooling;
-- introduces, changes, or could expose a security risk; or
-- is based on guidance whose logic or fit with the repository is uncertain.
+## Audit and approval boundary
 
-Explain the affected guidance, the reason for the change, and the specific risk or uncertainty. Continue with low-risk, well-supported corrections without interruption, but leave gated changes unapplied until the user authorizes them.
+Check every referenced path, command, environment variable, service, and
+workflow. Remove demonstrably stale references while preserving external or
+optional references that remain intentional. Keep repository-specific material
+in configuration or active `AGENTS.md`, not copied across skills.
 
-## Python-script exception
+Ask before moderate-or-higher-risk workflow changes, security-sensitive
+changes, or changes based on uncertain guidance. Apply low-risk verified
+corrections within the user's request.
 
-If a skill specifically invokes, depends on, or instructs the user to run a Python script:
-
-1. Do not translate or replace that script with another language, even if the repository's primary language is not Python.
-2. Ask the user whether Python is available in the environment where the skill will run, and wait for the answer before changing that skill's Python-dependent behavior.
-3. If Python is available, retain the script and update only its valid paths, invocation details, and relevant documentation links.
-4. If Python is not available, disable the skill without deleting it: rename its entrypoint from `SKILL.md` to `SKILL.md.disabled`, add a brief reason and re-enable condition at the top of that file, and report the change. Do not attempt a replacement implementation.
-
-## Verify and report
-
-After editing, re-scan the updated skills for broken local paths and obsolete commands. Run the repository's relevant lightweight validation commands when they are known and safe; otherwise state what could not be verified. Summarize the skills changed, stale references removed or replaced, documentation linked, any language-tool changes, and any skills disabled pending Python availability.
+Rescan local paths and placeholders, run safe lightweight validations, and
+report files changed, configuration resolved, applicability decisions, gaps,
+and commands/results. Do not commit.

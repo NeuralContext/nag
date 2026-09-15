@@ -1,65 +1,36 @@
 ---
 name: dead-code-cleanup
-description: Find and safely remove unused Python code in a Poetry project with Vulture. Use when asked to identify or eliminate dead Python code; do not use for broad refactors without a dead-code objective.
+description: Find and safely remove unused Python code in a Poetry project with Vulture; report inapplicable in other repository shapes.
+metadata:
+  nag: true
 ---
 
 # Dead Code Cleanup
 
-Use Vulture to produce a candidate list, then remove only code that has been
-verified unused. Vulture's findings are not proof: framework entry points,
-plugin registration, reflection, serialization, dynamic imports, and public
-library APIs commonly appear unused.
+Use Vulture to produce candidates, then remove only code verified unused. This skill is Python/Poetry-specific. It is `inapplicable`, not broken, when the repository is not a Python Poetry project.
 
-## Run Vulture through Poetry
+## NAG preflight
 
-Work from the directory containing `pyproject.toml`. First check whether the
-project environment has Vulture:
+Read all active `AGENTS.md` guidance, `<repo-root>/.agents/NAG-AGENTS.md`, and
+`<repo-root>/.agents/NAG-CONFIG.md`. Apply the `$dead-code-cleanup` section. If a required file or setting is missing, follow `NAG-AGENTS.md` fallback behavior and report the gap. Stop with `inapplicable` when configuration or repository manifests show this skill does not apply.
 
-```bash
-poetry run vulture --version
-```
+If the `$dead-code-cleanup` section of the NAG-CONFIG.md shows `Enabled: no`, skip this skill completely and alert the user.
+## Scan and verify
 
-If dependencies have not been installed, use the project's normal Poetry
-installation command without changing dependency declarations. If Vulture is
-not a project dependency, report that and ask before adding it (normally as a
-development dependency); do not silently modify `pyproject.toml` or the lock
-file.
+From the directory containing `pyproject.toml`, check
+`poetry run vulture --version`. Use the existing Poetry environment; do not add Vulture or change dependency files without approval. Run Vulture against the configured source/test scope, excluding vendored, generated, migration, build, cache, and environment directories.
 
-Run an initial scan through Poetry and save the raw output outside the source
-tree or in an ignored temporary location. Honor existing Vulture configuration
-or excludes before adding flags. Start with the package and test directories,
-not vendored, generated, migration, build, cache, or virtual-environment
-directories. Treat Vulture's exit status as a reporting detail rather than a
-reason to discard its output.
+For every candidate, search direct and dynamic references, exports, entry
+points, framework/plugin registration, serialization, templates, and config.
+Preserve public APIs and uncertain candidates. Remove only tightly related,
+verified dead code and its newly obsolete imports/tests/references.
 
-## Verify candidates before editing
+Do not add arbitrary Vulture whitelist entries merely to make the report clean; use a documented whitelist only for verified intentional dynamic/public uses.
 
-For each candidate that might be removed:
-
-1. Search the repository for direct references and string-based/dynamic uses.
-2. Inspect package exports, CLI entry points, framework routes, task/plugin
-   registration, model/serializer fields, templates, and configuration that
-   could name it indirectly.
-3. Preserve intentionally public APIs unless the task explicitly authorizes
-   changing them. Keep uncertain candidates and explain why.
-4. Group only tightly related, low-risk removals; avoid opportunistic cleanup.
-
-Remove confirmed code together with imports, tests, comments, and references
-made obsolete by that exact removal. Keep each change narrow and reviewable.
-Do not add arbitrary Vulture whitelist entries merely to make the report clean;
-use a documented whitelist only for verified intentional dynamic/public uses.
+If Vulture is missing, prompt the user for permission to install unless the
 
 ## Validate and report
 
-Run the project's relevant test, lint, type-check, and formatting commands
-where they are available, all through `poetry run`. At minimum, rerun Vulture
-with the same scope and confirm that removed candidates no longer appear.
-If validation fails, diagnose and fix only changes introduced by this cleanup;
-otherwise restore the affected removal and report it as retained.
-
-Summarize:
-
-- confirmed code removed and why it was safe;
-- candidates retained, with the reason or uncertainty;
-- validation commands and results; and
-- any Vulture installation/configuration change that still needs approval.
+Rerun the same Vulture scope and repository-configured relevant checks through
+Poetry. Report removed and retained candidates, evidence, exact commands and
+results, and dependency/configuration gaps. Do not commit.
