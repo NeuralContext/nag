@@ -70,8 +70,6 @@ Prerequisite: the NAG plugin is installed and enabled.
 `$install-nag` is the single entry point for both initial setup and later
 guidance/configuration reconciliation. Its deterministic fetch script retrieves
 and verifies the commit-pinned public inputs before target files are changed;
-it does not use a branch, release, or agent-assembled download command.
-
 NAG looks for design material at the configured path, defaulting to
 `docs/design/`. When that directory does not exist, agents continue with other
 maintained repository documentation and report the missing reference.
