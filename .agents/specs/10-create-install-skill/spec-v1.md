@@ -20,7 +20,7 @@ copies skills into the repository and never commits on the user's behalf.
 - Rename `.agents/skills/update-agent-guidance/` to
   `.agents/skills/install-nag/` and rename the skill in its frontmatter and
   instructions.
-- Add `.agents/skills/install-nag/scripts/fetch-nag-resources.sh` as the only
+- Add `.agents/skills/install-nag/scripts/fetch_nag_resources.py` as the only
   supported mechanism for downloading and verifying pinned NAG resources.
 - Make `$install-nag` work for both a repository without NAG guidance and a
   repository with an existing NAG installation.
@@ -103,7 +103,7 @@ copies skills into the repository and never commits on the user's behalf.
 | File/component | Required change |
 | --- | --- |
 | `.agents/skills/update-agent-guidance/SKILL.md` | Move to `.agents/skills/install-nag/SKILL.md`; replace the old skill identity and expand the workflow. |
-| `.agents/skills/install-nag/scripts/fetch-nag-resources.sh` | Add an executable, deterministic downloader that owns the pinned commit, exact URLs, checksums, staging, verification, and failure cleanup. |
+| `.agents/skills/install-nag/scripts/fetch_nag_resources.py` | Add a Python 3 deterministic downloader that owns the pinned commit, exact URLs, checksums, staging, verification, and failure cleanup. |
 | `.agents/NAG-CONFIG.md` | Rename the skill configuration section and references to `$install-nag`; preserve the current guidance intent. |
 | `README.md` | Replace the manual existing-repository copy procedure with the plugin assumption and `$install-nag` workflow; rename skill references and table entry. |
 | `docs/design/overview.md` | Describe `$install-nag` as the repository bootstrap and reconciliation entry point. |
@@ -199,7 +199,7 @@ second run produce no additional edit.
 
 ### 3. Commit-pinned, verified remote source
 
-Create `.agents/skills/install-nag/scripts/fetch-nag-resources.sh`. The script,
+Create `.agents/skills/install-nag/scripts/fetch_nag_resources.py`. The script,
 not free-form skill instructions, owns the immutable source manifest, URL
 construction, network transfer, checksum verification, staging lifecycle, and
 machine-readable success/failure contract. `$install-nag` must invoke this
@@ -242,19 +242,19 @@ https://raw.githubusercontent.com/NeuralContext/nag/fcbc43b9af615cfdd564e84c127e
 The script interface is:
 
 ```text
-fetch-nag-resources.sh [--include-codex]
+fetch_nag_resources.py [--include-codex]
 
 stdout on success: one absolute path to the verified staging directory
 stderr: diagnostics only
 exit 0: every selected resource was downloaded and verified
-exit 2: invalid arguments or missing required local command
+exit 2: invalid arguments or unavailable/supported Python interpreter
 exit 3: network/HTTP/redirect failure
 exit 4: checksum or downloaded-file validation failure
 ```
 
-The script must require only Bash plus explicitly checked common commands such
-as `curl`, `sha256sum`, `mktemp`, and `rm`. It must check dependencies before
-network access and report missing commands without attempting package
+The script must require Python 3.8 or newer and use only its standard library.
+The invoking skill must establish an available Python 3 interpreter before
+running it and report a missing interpreter without attempting package
 installation. Do not accept a commit, repository, raw base URL, checksum, or
 output directory from environment variables or command-line arguments.
 
@@ -264,9 +264,9 @@ The runtime algorithm must fail closed and remain deterministic:
 PINNED_COMMIT = "fcbc43b9af615cfdd564e84c127e41909be95575"
 manifest = hard_coded_manifest()
 assert manifest.commit == PINNED_COMMIT
-check_required_commands()
+assert_python_3_8_or_newer()
 
-staging_dir = mktemp_directory()
+staging_dir = create_temporary_directory()
 register_failure_cleanup(staging_dir)
 
 selected = required_files(manifest)
@@ -276,10 +276,8 @@ if argument_present("--include-codex"):
 for file in selected:
     destination = safe_join(staging_dir, file.source)
     create_parent_directories(destination)
-    curl(
-        fail_on_http_error = true,
-        https_only = true,
-        exact_pinned_url = file.source,
+    request_exact_pinned_url_without_redirects(
+        require_http_200 = true,
         destination = destination,
     )
     require(sha256(destination) == file.sha256)
@@ -313,7 +311,7 @@ instead use this ordering:
 3. Inventory existing .agents/NAG-AGENTS.md and .agents/NAG-CONFIG.md if present.
 4. Ask whether to update supported `.codex/` presets, presenting yes as the
    recommended choice and making clear which files may change.
-5. Invoke `scripts/fetch-nag-resources.sh`, adding `--include-codex` only when
+5. Invoke `scripts/fetch_nag_resources.py` with Python 3.8 or newer, adding `--include-codex` only when
    the user accepted the preset update. Do not reproduce its download logic in
    skill prose or ad hoc commands.
 6. Require script exit `0`, capture its single stdout staging path, and verify
@@ -440,14 +438,14 @@ branch-changing commands, or pull-request creation commands.
 2. Direct the skill to resolve and disclose the target repository root before
    making changes.
 3. Create
-   `.agents/skills/install-nag/scripts/fetch-nag-resources.sh` with the exact
+   `.agents/skills/install-nag/scripts/fetch_nag_resources.py` with the exact
    constants, resource paths, and checksums in Design Decision 3:
    - Hard-code commit `fcbc43b9af615cfdd564e84c127e41909be95575`.
    - Do not expose source, commit, checksum, or output-location overrides.
    - Support no argument for required resources and exactly
      `--include-codex` for required plus optional preset resources.
-   - Check Bash runtime dependencies without installing them.
-   - Use HTTPS-only `curl`, do not follow redirects, and require HTTP `200`.
+   - Require Python 3.8 or newer without installing it or any package.
+   - Use Python standard-library HTTPS requests, do not follow redirects, and require HTTP `200`.
    - Download to a script-created temporary directory without touching target
      repository files.
    - Verify SHA-256 and basic expected file shape for every selected resource.
@@ -457,7 +455,7 @@ branch-changing commands, or pull-request creation commands.
    - On success, print only the absolute verified staging path and leave that
      directory for the caller to consume and remove.
 4. Update `SKILL.md` to use the script as the exclusive resource-fetch path:
-   - Never reproduce downloads with ad hoc agent-authored `curl`, Git, browser,
+   - Never reproduce downloads with ad hoc agent-authored network commands, Git, browser,
      or other commands.
    - Interpret a nonzero script exit as a blocker before target writes.
    - Capture the successful stdout path, read resources only under that path,
@@ -581,8 +579,8 @@ branch-changing commands, or pull-request creation commands.
    ```bash
    test -f .agents/skills/install-nag/SKILL.md
    test ! -e .agents/skills/update-agent-guidance
-   test -x .agents/skills/install-nag/scripts/fetch-nag-resources.sh
-   bash -n .agents/skills/install-nag/scripts/fetch-nag-resources.sh
+   test -f .agents/skills/install-nag/scripts/fetch_nag_resources.py
+   python3 -c 'from pathlib import Path; source = Path(".agents/skills/install-nag/scripts/fetch_nag_resources.py"); compile(source.read_text(), str(source), "exec")'
    rg -n '^name: install-nag$|^metadata:|^[[:space:]]+nag: true$' \
      .agents/skills/install-nag/SKILL.md
    ```
@@ -669,7 +667,7 @@ branch-changing commands, or pull-request creation commands.
 - [ ] The skill assumes all NAG skills are plugin-provided and does not copy,
   install, update, or remove repository-local `.agents/skills/` content.
 - [ ] The implementation adds executable
-  `.agents/skills/install-nag/scripts/fetch-nag-resources.sh`, and `SKILL.md`
+  `.agents/skills/install-nag/scripts/fetch_nag_resources.py`, and `SKILL.md`
   requires this script as the exclusive resource-fetch mechanism on every run.
 - [ ] The script hard-codes
   `fcbc43b9af615cfdd564e84c127e41909be95575` and the exact HTTPS source paths
@@ -741,10 +739,10 @@ branch-changing commands, or pull-request creation commands.
 - **Network availability:** Initial installation and source-based updates need
   network permission. There is no unpinned, cached, plugin-template, or branch
   fallback. Report the exact failure and leave the target unchanged.
-- **Runtime dependencies:** The script depends on Bash, `curl`, `sha256sum`,
-  `mktemp`, and basic filesystem commands. Missing dependencies make the fetch
-  unavailable; the skill reports them and does not install packages or replace
-  the deterministic script with improvised commands.
+- **Runtime dependencies:** The script depends on Python 3.8 or newer and its
+  standard library. A missing interpreter makes the fetch unavailable; the
+  skill reports it and does not install packages or replace the deterministic
+  script with improvised commands.
 - **Optional `.codex` merge:** TOML and agent presets may contain target-specific
   settings. Acceptance authorizes a merge, not wholesale replacement. If a
   conflict cannot be resolved safely, preserve the target value and report it.

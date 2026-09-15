@@ -56,21 +56,21 @@ This is how we achieve high-quality code at a reasonable speed and price.
 
 ### Adding to an Existing Repo
 
-1. Merge the small NAG bootstrap block from `AGENTS.md` into the target's root
-   `AGENTS.md`; preserve its existing repository-owned instructions.
-2. Install the `nag` plugin, then copy or merge `.agents/NAG-AGENTS.md` and
-   `.agents/NAG-CONFIG.md`. Copy `.codex/` only when its agent configuration
-   fits the target environment.
-3. In `.agents/NAG-CONFIG.md`, configure the design-document and temporary
-   artifact paths; separate `fast`, `slow`, and `very_slow` test commands; test
-   infrastructure/mock policy; dashboard applicability and outputs; and any
-   skill-specific overrides. Test commands belong to the consuming repository.
-4. Run `$update-agent-guidance` to verify the repository's manifests, scripts,
-   CI, documentation, and language-dependent skill applicability.
-5. Resolve every angle-bracket placeholder before using an affected skill.
-   Missing commands stay unconfigured; do not leave fake executable examples.
-6. Open Codex with a high-tier architecture/orchestration model and review
-   `.codex/agents/implementer.toml` if the copied Codex configuration is used.
+Prerequisite: the NAG plugin is installed and enabled.
+
+1. Open the target repository with the appropriate agent/model.
+2. Run `$install-nag`.
+3. Approve network access to retrieve verified bootstrap and configuration
+   inputs from public NAG commit `fcbc43b9af615cfdd564e84c127e41909be95575`.
+4. Choose whether to apply the recommended `.codex` presets.
+5. Resolve decisions or gaps reported by the skill.
+6. Review the unstaged diff.
+7. Commit the changes only when satisfied.
+
+`$install-nag` is the single entry point for both initial setup and later
+guidance/configuration reconciliation. Its deterministic fetch script retrieves
+and verifies the commit-pinned public inputs before target files are changed;
+it does not use a branch, release, or agent-assembled download command.
 
 NAG looks for design material at the configured path, defaulting to
 `docs/design/`. When that directory does not exist, agents continue with other
@@ -82,7 +82,7 @@ skill-specific defaults. Rules explicitly marked as NAG safety/integrity
 invariants cannot be relaxed by repository configuration.
 
 Some skills are language-specific. `$test-dashboard` supports only Python +
-pytest, and `$dead-code-cleanup` supports Python + Poetry. `$update-agent-guidance`
+pytest, and `$dead-code-cleanup` supports Python + Poetry. `$install-nag`
 records them as applicable, disabled, inapplicable, or unavailable rather than
 rewriting them for another ecosystem.
 
@@ -160,7 +160,7 @@ settings are unresolved.
 
 | Skill | Brief summary | Who uses it | Missing? |
 | --- | --- | --- | --- |
-| [`$update-agent-guidance`](plugins/nag/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Developer | No |
+| [`$install-nag`](plugins/nag/skills/install-nag/SKILL.md) | Install or reconcile NAG guidance and configuration for the target repo. | Developer | No |
 | [`$create-spec`](plugins/nag/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
 | [`$architect-and-orchestrate`](plugins/nag/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
 | `$check-code-correctness` | Check builds and code correctness. | Agent | **Yes** |
