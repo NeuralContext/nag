@@ -112,13 +112,13 @@ Initialize the repo using [Getting Started](#getting-started) before following t
       - Use a kebab-case name such as `10-feature-description`, normally beginning with the issue identifier.
       - One branch may have multiple feature directories, such as `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
       - If no directory or name is supplied, `$create-spec` uses a single uninitialized directory the user already created. If there are several, it asks which one to use. If there are none, it proposes a name from the branch and requested work and asks for confirmation before creating it.
-2. **Architect + Developer:** 
+2. **Architec Agent + Developer:** 
    - Work together to define the scope and acceptance criteria
    - Architect agent writes `.agents/specs/<feature-name>/spec-v1.md`.
    - Developer answers questions and approves it before implementation.
 3. **Developer:** Run `$architect-and-orchestrate` and point it to the approved spec.
-4. **Architect:** Delegate the spec to an implementation agent.
-5. **Implementer:** Implement the spec and validate it using the checks below. For each applicable check, fix implementation-caused issues and rerun it before moving on. Repeat affected checks after later fixes until all required checks pass. `$run-tests` reads commands from `.agents/NAG-CONFIG.md`, runs `fast` before `slow` as separate commands, and never runs `very_slow` without current developer approval.
+4. **Architect Agent:** Delegate the spec to an implementation agent.
+5. **Implementer Agent:** Implement the spec and validate it using the checks below. For each applicable check, fix implementation-caused issues and rerun it before moving on. Repeat affected checks after later fixes until all required checks pass. `$run-tests` reads commands from `.agents/NAG-CONFIG.md`, runs `fast` before `slow` as separate commands, and never runs `very_slow` without current developer approval.
 
    | Order | Skill | Purpose |
    | --- | --- | --- |
@@ -129,10 +129,10 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    | 5 | `$run-tests` | Run the required test suites. |
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
-6. **Architect:** Run `$peer-review` against `spec-v1.md` and save its findings as `review-v1.md` in the same feature directory. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
-7. **Architect + Implementer:** If the review doesn't meet the threshold, create `spec-v2.md`, delegate the fixes, and write the next review to `review-v2.md`. Continue pairing `spec-vN.md` with `review-vN.md` until the review threshold is met and implementation is complete. Bring material design decisions back to the developer.
-8. **Implementer:** After the iterative spec, implementation, validation, and peer-review loop is complete, prepare final visualizations for developer review. `$test-dashboard` is optional and Python/pytest-only; it writes configured repository-local ignored artifacts and does not open them automatically. If producing a visualization identifies a required code or test change, return to the iterative loop and regenerate visualizations only after the new final review passes.
-9. **Architect:** Report the completed scope, validation results, visualization artifacts, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to write `<feature-directory>/change-summary.md`.
+6. **Architect Agent:** Run `$peer-review` against `spec-v1.md` and save its findings as `review-v1.md` in the same feature directory. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
+7. **Architect Agent + Implementer Agent:** If the review doesn't meet the threshold, create `spec-v2.md`, delegate the fixes, and write the next review to `review-v2.md`. Continue pairing `spec-vN.md` with `review-vN.md` until the review threshold is met and implementation is complete. Bring material design decisions back to the developer.
+8. **Implementer Agent:** After the iterative spec, implementation, validation, and peer-review loop is complete, prepare final visualizations for developer review. `$test-dashboard` is optional and Python/pytest-only; it writes configured repository-local ignored artifacts and does not open them automatically. If producing a visualization identifies a required code or test change, return to the iterative loop and regenerate visualizations only after the new final review passes.
+9. **Architect Agent:** Report the completed scope, validation results, visualization artifacts, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to write `<feature-directory>/change-summary.md`.
 
 ### Feature artifact lifecycle
 
