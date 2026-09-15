@@ -59,7 +59,7 @@ def download_resource(opener, staging_directory: Path, resource: tuple[str, str,
     resource_path, expected_checksum, resource_kind = resource
     url = f"{RAW_REPOSITORY}/{PINNED_COMMIT}/{resource_path}"
     try:
-        with opener.open(Request(url, headers={"User-Agent": "nag-install-fetcher"}), timeout=30) as response:
+        with opener.open(Request(url, headers={"User-Agent": "nag-configure-fetcher"}), timeout=30) as response:
             if response.status != 200:
                 raise FetchError(3, f"Unexpected HTTP status {response.status} for {url}")
             content = response.read()

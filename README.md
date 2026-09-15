@@ -54,23 +54,43 @@ This is how we achieve high-quality code at a reasonable speed and price.
 
 ## Getting Started
 
-### Adding to an Existing Repo
+Using Nag consists of two steps:
 
-Prerequisite: the NAG plugin is installed and enabled.
+1. Install the plugin in Codex
+2. Configure Nag for each of your repositories
+
+### Install the Nag plugin
+
+Add the Nag GitHub repository as a Codex plugin marketplace, then install the
+plugin from that marketplace:
+
+```shell
+codex plugin marketplace add https://github.com/NeuralContext/nag
+codex plugin add nag@nag
+```
+
+Restart Codex after installation so the Nag skills are available.
+
+### Run `$configure-nag` in your repository/project
+
+Because each repository has its own commands, paths, and policies, run the
+configuration skill separately in every repository where you want to use Nag.
+
+> Prerequisite: the NAG plugin is installed and enabled.
 
 1. Open the target repository with the appropriate agent/model.
-2. Run `$install-nag`.
-3. Approve network access to retrieve verified bootstrap and configuration
-   inputs from public NAG commit `fcbc43b9af615cfdd564e84c127e41909be95575`.
+2. Run `$configure-nag`.
+3. Approve network access
+   - NOTE: This uses TLS to pull base templates from a known-good commit hash
 4. Choose whether to apply the recommended `.codex` presets.
 5. Resolve decisions or gaps reported by the skill.
 6. Review the unstaged diff.
 7. Commit the changes only when satisfied.
 
-`$install-nag` is the single entry point for both initial setup and later
-guidance/configuration reconciliation. Its deterministic fetch script retrieves
-and verifies the commit-pinned public inputs before target files are changed;
-NAG looks for design material at the configured path, defaulting to
+`$configure-nag` is the single entry point for both initial repository setup
+and later guidance/configuration reconciliation. Its deterministic fetch script
+retrieves and verifies the commit-pinned public inputs before target files are
+changed; NAG looks for design material at the configured path, defaulting to
 `docs/design/`. When that directory does not exist, agents continue with other
 maintained repository documentation and report the missing reference.
 
@@ -80,7 +100,7 @@ skill-specific defaults. Rules explicitly marked as NAG safety/integrity
 invariants cannot be relaxed by repository configuration.
 
 Some skills are language-specific. `$test-dashboard` supports only Python +
-pytest, and `$dead-code-cleanup` supports Python + Poetry. `$install-nag`
+pytest, and `$dead-code-cleanup` supports Python + Poetry. `$configure-nag`
 records them as applicable, disabled, inapplicable, or unavailable rather than
 rewriting them for another ecosystem.
 
@@ -158,7 +178,7 @@ settings are unresolved.
 
 | Skill | Brief summary | Who uses it | Missing? |
 | --- | --- | --- | --- |
-| [`$install-nag`](plugins/nag/skills/install-nag/SKILL.md) | Install or reconcile NAG guidance and configuration for the target repo. | Developer | No |
+| [`$configure-nag`](plugins/nag/skills/configure-nag/SKILL.md) | Configure or reconcile NAG guidance for the current repository. | Developer | No |
 | [`$create-spec`](plugins/nag/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
 | [`$architect-and-orchestrate`](plugins/nag/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
 | `$check-code-correctness` | Check builds and code correctness. | Agent | **Yes** |

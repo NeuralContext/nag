@@ -4,7 +4,7 @@ This is the configuration for the NAG repository itself. Consuming repositories 
 
 Angle-bracket values are placeholders, not executable commands. A skill that
 depends on an unresolved placeholder is unconfigured until
-`$install-nag` resolves it.
+`$configure-nag` resolves it.
 
 ## Repository Structure
 
@@ -51,7 +51,7 @@ depends on an unresolved placeholder is unconfigured until
     standards path is absent. Write only to the selected feature's matching
     `review-vN.md`.
 
-### `$install-nag`
+### `$configure-nag`
 - Enabled: yes
 - Guidance:
     - Resolve all placeholders and explicitly record which language-dependent skills are applicable, disabled, inapplicable, or unavailable for the target repository.

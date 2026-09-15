@@ -1,27 +1,28 @@
 ---
-name: install-nag
-description: Install or update NAG repository guidance, reconcile configuration, validate it, and leave changes for user review.
+name: configure-nag
+description: Configure or update NAG guidance for a specific repository, validate it, and leave changes for user review.
 metadata:
   nag: true
 ---
 
-# Install NAG
+# Configure NAG
 
-Install or reconcile the plugin-delivered NAG guidance in the repository where
-the agent is operating. This is the single idempotent entry point for both a
-fresh setup and later updates. Never copy, install, update, or delete
-repository-local `.agents/skills/` content: NAG skills are plugin-provided.
-Never stage, commit, push, create a pull request, or change branches.
+Configure or reconcile the plugin-delivered NAG guidance in the repository
+where the agent is operating. This is the single idempotent entry point for
+both an initial repository setup and later updates. Never copy, install, update,
+or delete repository-local `.agents/skills/` content: NAG skills are
+plugin-provided. Never stage, commit, push, create a pull request, or change
+branches.
 
-## Install-aware preflight
+## Configuration preflight
 
 1. Resolve the target with `git rev-parse --show-toplevel`, report that root,
    and ensure it is the current repository; do not accept another checkout as
    a source or target.
 2. Read every active target `AGENTS.md` and `AGENTS.override.md` that applies.
-   Missing `.agents/NAG-AGENTS.md` and `.agents/NAG-CONFIG.md` are expected on
-   a first install. Inventory either file when present, along with `AGENTS.md`
-   and existing working-tree changes.
+   Missing `.agents/NAG-AGENTS.md` and `.agents/NAG-CONFIG.md` are expected for
+   an unconfigured repository. Inventory either file when present, along with
+   `AGENTS.md` and existing working-tree changes.
 3. Prompt once whether to apply the recommended NAG presets. Name the only
    supported files—`.codex/config.toml` and `.codex/agents/implementer.toml`—
    and explain that acceptance authorizes a merge preserving unrelated local
@@ -42,17 +43,17 @@ Never stage, commit, push, create a pull request, or change branches.
 
 The fetch script verifies every selected byte before returning its staging path.
 Network denial, redirect/HTTP failure, missing content, malformed content, or
-checksum failure is a blocker; never partially install or use an unpinned
+checksum failure is a blocker; never partially configure or use an unpinned
 fallback.
 
-## Classify and reconcile installation
+## Classify and reconcile repository configuration
 
 Classify the state after verified resources are available:
 
 - If both `.agents/NAG-AGENTS.md` and `.agents/NAG-CONFIG.md` are absent,
-  report `fresh install`.
+  report `initial configuration`.
 - Otherwise report `update`; if exactly one is present, also report the
-  partial-installation gap.
+  partial-configuration gap.
 
 For the root `AGENTS.md`, preserve all repository-owned text. Create it when
 absent. Extract the NAG workflow bootstrap from the verified staged
@@ -63,14 +64,15 @@ candidates or materially edited candidates exist, display the conflict and
 obtain approval before editing. Re-scan after writing and prove exactly one
 effective bootstrap block remains.
 
-Create `.agents/` as needed. On a fresh install, write the verified canonical
-`.agents/NAG-AGENTS.md` and initialize `.agents/NAG-CONFIG.md` from the
-verified template. On update, reconcile portable guidance with the canonical
-version only when ownership is clear. Surface ambiguous local divergence and
-ask before replacing it. Reconcile an existing configuration by section/key:
-retain resolved repository paths, commands, policies, overrides, enablement
-choices, and rationales. Never replace a resolved value with an angle-bracket
-template placeholder.
+Create `.agents/` as needed. For an initial configuration, write the verified
+canonical `.agents/NAG-AGENTS.md` and initialize `.agents/NAG-CONFIG.md` from
+the verified template. On update, reconcile portable guidance with the
+canonical version only when ownership is clear. Surface ambiguous local
+divergence and ask before replacing it. Reconcile an existing configuration by
+section/key: retain resolved repository paths, commands, policies, overrides,
+enablement choices, and rationales. Never replace a resolved value with an
+angle-bracket template placeholder. Replace live references to prior skill
+names with `$configure-nag`; do not rewrite frozen feature history.
 
 When presets were accepted, merge only the two verified supported preset files;
 retain unrelated TOML settings and agent definitions. If a conflict cannot be
@@ -83,7 +85,7 @@ moderate-or-higher-risk, security-sensitive, or destructive changes.
 
 ## Terminal guidance audit
 
-After the verified bootstrap and portable guidance are installed, read
+After the verified bootstrap and portable guidance are configured, read
 `.agents/NAG-AGENTS.md` and `.agents/NAG-CONFIG.md` and perform this terminal
 phase. Discover active guidance, plugin-visible NAG skill metadata and declared
 requirements, language/package manifests, task scripts, CI, formatter/linter/
@@ -113,9 +115,9 @@ and use read-only Git inspection such as `git status --short` and
 
 End with this report, leaving all changes unstaged and uncommitted:
 
-## NAG installation result
+## NAG configuration result
 
-- Mode: fresh install or update
+- Mode: initial configuration or update
 - Target: resolved repository root
 - Files added and modified
 - Existing values preserved and conflicts requiring approval

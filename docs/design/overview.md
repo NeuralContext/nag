@@ -17,13 +17,13 @@ validation, and independent review.
 NAG separates plugin-supplied portable workflow guidance from repository-owned
 configuration. Shared defaults and safety invariants remain consistent across
 projects, while each repository supplies its own commands, paths,
-infrastructure policies, and skill applicability. `$install-nag` is the
-bootstrap and reconciliation entry point; it initializes canonical guidance and
-configuration from a verified, commit-pinned public NAG source. Versioned
-specifications and reviews make iteration traceable, and concise visualizations
-help developers understand the resulting code and test evidence without making
-generated artifacts authoritative.
-- README.md and $install-nag help bootstrap a new repository
+infrastructure policies, and skill applicability. `$configure-nag` is the
+repository configuration and reconciliation entry point; it initializes
+canonical guidance and configuration from a verified, commit-pinned public NAG
+source. Versioned specifications and reviews make iteration traceable, and
+concise visualizations help developers understand the resulting code and test
+evidence without making generated artifacts authoritative.
+- README.md and $configure-nag help configure NAG for a repository
 - $create-spec and $architect-and-orchestrate help you design, implement, test, and review.
 
 ## Guidance and configuration
