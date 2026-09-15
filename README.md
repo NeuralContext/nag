@@ -14,10 +14,12 @@ AI has exploded the world of software development (we mean this in a good way). 
 
 | Path | What's in it |
 | --- | --- |
-| [`.agents/skills/`](.agents/skills/) | Skills and other agent-specific instructions for AI. |
-| `.agents/specs/` | Working specs created during development; added when needed. |
+| [NAG plugin skills](plugins/nag/skills/) | Reusable workflow skills provided to Codex by the `nag` plugin. |
+| `.agents/specs/<feature-name>/` | A feature's versioned specs, peer reviews, and change summary. |
 | [`.codex/`](.codex/) | Configuration for this repository that is also reusable in other repositories. |
-| [`AGENTS.md`](AGENTS.md) | Shared repository guidance for coding agents. |
+| [`AGENTS.md`](AGENTS.md) | Small bootstrap that connects repository guidance to NAG. |
+| [`.agents/NAG-AGENTS.md`](.agents/NAG-AGENTS.md) | Portable NAG-wide defaults and invariants. |
+| [`.agents/NAG-CONFIG.md`](.agents/NAG-CONFIG.md) | Repository-owned paths, commands, policies, and overrides. |
 | [`README.md`](README.md) | You are here. Bootstrapping and process information for bipeds with large organic neural networks. |
 
 ## Things That Matter (in order)
@@ -52,17 +54,60 @@ This is how we achieve high-quality code at a reasonable speed and price.
 
 ## Getting Started
 
-### Adding to an Existing Repo
+Using Nag consists of two steps:
 
-1. Copy `.agents/` and `.codex/` into the root of the target repository. If either folder already exists, merge the contents so you preserve the repo's existing skills and configuration.
-2. Copy `AGENTS.md` if the target repo doesn't have one. Otherwise, merge the relevant guidance into its existing file.
-3. Open Codex in the target repository and select a high-tier model for architecture and orchestration. Review the copied `.codex/` configuration, including the implementation model in `.codex/agents/implementer.toml`, for your environment.
-4. Run `$update-agent-guidance` to align the guidance and skills with the target repository's language, tooling, and conventions.
-5. Review the updated guidance and resolve any missing references before starting development.
+1. Install the plugin in Codex
+2. Configure Nag for each of your repositories
 
-> **NOTE:** This library is oriented toward Python, and some skills assume certain paths and conventions. `$update-agent-guidance` adapts the guidance to the target repo, including other languages; it may ask for input where a change needs a decision.
+### Install the Nag plugin
 
-> **WORK IN PROGRESS:** Some skills in the process below aren't included yet. The [Skills](#skills) table marks them explicitly. Until they're added, use the target repo's existing validation commands and document any gaps in the spec.
+Add the Nag GitHub repository as a Codex plugin marketplace, then install the
+plugin from that marketplace:
+
+```shell
+codex plugin marketplace add https://github.com/NeuralContext/nag
+codex plugin add nag@nag
+```
+
+Restart Codex after installation so the Nag skills are available.
+
+### Run `$configure-nag` in your repository/project
+
+Because each repository has its own commands, paths, and policies, run the
+configuration skill separately in every repository where you want to use Nag.
+
+> Prerequisite: the NAG plugin is installed and enabled.
+
+1. Open the target repository with the appropriate agent/model.
+2. Run `$configure-nag`.
+3. Approve network access
+   - NOTE: This uses TLS to pull base templates from a known-good commit hash
+4. Choose whether to apply the recommended `.codex` presets.
+5. Resolve decisions or gaps reported by the skill.
+6. Review the unstaged diff.
+7. Commit the changes only when satisfied.
+
+`$configure-nag` is the single entry point for both initial repository setup
+and later guidance/configuration reconciliation. Its deterministic fetch script
+retrieves and verifies the commit-pinned public inputs before target files are
+changed; NAG looks for design material at the configured path, defaulting to
+`docs/design/`. When that directory does not exist, agents continue with other
+maintained repository documentation and report the missing reference.
+
+Instruction precedence is platform safety; active repository `AGENTS.md` and
+`AGENTS.override.md`; `.agents/NAG-CONFIG.md`; `.agents/NAG-AGENTS.md`; then
+skill-specific defaults. Rules explicitly marked as NAG safety/integrity
+invariants cannot be relaxed by repository configuration.
+
+Some skills are language-specific. `$test-dashboard` supports only Python +
+pytest, and `$dead-code-cleanup` supports Python + Poetry. `$configure-nag`
+records them as applicable, disabled, inapplicable, or unavailable rather than
+rewriting them for another ecosystem.
+
+> **WORK IN PROGRESS:** Some skills in the process below aren't included yet.
+> Discover actual skill files for every workflow run; do not rely on this table
+> as a capability registry. Missing and unconfigured validations remain visible
+> gaps.
 
 ## How to Use Nag (development process overview)
 
@@ -81,14 +126,17 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    - Create a branch with the issue number at the start (e.g. `134-fix-all-the-broken-stuff`)
    - Start Codex with a high-tier model (e.g. 5.6-sol or astra)
    - Run `$create-spec`.
-      - Optionally include a desired filename and a brief description of the goal of the spec (or as much detail as you want)
-2. **Architect + Developer:** 
+      - Prefer creating `.agents/specs/<feature-name>/` first or supplying the name to the skill when you start it (e.g. `$create-spec 10-add-test-metrics`).
+      - Use a kebab-case name such as `10-feature-description`, normally beginning with the issue identifier.
+      - One branch may have multiple feature directories, such as `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
+      - If no directory or name is supplied, `$create-spec` uses a single uninitialized directory the user already created. If there are several, it asks which one to use. If there are none, it proposes a name from the branch and requested work and asks for confirmation before creating it.
+2. **Architec Agent + Developer:** 
    - Work together to define the scope and acceptance criteria
-   - Architect  agent writes the initial spec in `.agents/specs/`
+   - Architect agent writes `.agents/specs/<feature-name>/spec-v1.md`.
    - Developer answers questions and approves it before implementation.
 3. **Developer:** Run `$architect-and-orchestrate` and point it to the approved spec.
-4. **Architect:** Delegate the spec to an implementation agent.
-5. **Implementer:** Implement the spec and validate it using the checks below. For each check, fix the issues and rerun it before moving on. Repeat affected checks after later fixes until all required checks pass.
+4. **Architect Agent:** Delegate the spec to an implementation agent.
+5. **Implementer Agent:** Implement the spec and validate it using the checks below. For each applicable check, fix implementation-caused issues and rerun it before moving on. Repeat affected checks after later fixes until all required checks pass. `$run-tests` reads commands from `.agents/NAG-CONFIG.md`, runs `fast` before `slow` as separate commands, and never runs `very_slow` without current developer approval.
 
    | Order | Skill | Purpose |
    | --- | --- | --- |
@@ -99,27 +147,47 @@ Initialize the repo using [Getting Started](#getting-started) before following t
    | 5 | `$run-tests` | Run the required test suites. |
    | 6 | `$dead-code-cleanup` | Verify and remove unused Python code. |
 
-6. **Implementer:** Prepare visualizations for developer review with `$test-dashboard` and `$mermaid-visualizer` when available.
-7. **Architect:** Run `$peer-review` against the implementation and spec. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
-8. **Architect + Implementer:** If the review doesn't meet the threshold, the architect writes a versioned follow-up spec and delegates the fixes. Repeat implementation, validation, visualization, and review. Bring material design decisions back to the developer.
-9. **Architect:** Report the completed scope, validation results, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to record what actually changed.
+6. **Architect Agent:** Run `$peer-review` against `spec-v1.md` and save its findings as `review-v1.md` in the same feature directory. Check the findings against the review threshold: no critical or major/high issues and at most three minor issues. Automated checks are repeatable; peer review still requires judgment.
+7. **Architect Agent + Implementer Agent:** If the review doesn't meet the threshold, create `spec-v2.md`, delegate the fixes, and write the next review to `review-v2.md`. Continue pairing `spec-vN.md` with `review-vN.md` until the review threshold is met and implementation is complete. Bring material design decisions back to the developer.
+8. **Implementer Agent:** After the iterative spec, implementation, validation, and peer-review loop is complete, prepare final visualizations for developer review. `$test-dashboard` is optional and Python/pytest-only; it writes configured repository-local ignored artifacts and does not open them automatically. If producing a visualization identifies a required code or test change, return to the iterative loop and regenerate visualizations only after the new final review passes.
+9. **Architect Agent:** Report the completed scope, validation results, visualization artifacts, final review counts, and any accepted minor issues. When ready to prepare the PR, the developer can request `$create-change-summary` to write `<feature-directory>/change-summary.md`.
+
+### Feature artifact lifecycle
+
+Specs, reviews, and the change summary stay available in their feature directory throughout development and merge-request review. The selected feature directory—not the branch—is the workflow context, so a branch can carry several independent feature-spec sequences.
+
+```text
+.agents/specs/
+└── 10-feature-description/
+    ├── spec-v1.md
+    ├── review-v1.md
+    ├── spec-v2.md
+    ├── review-v2.md
+    └── change-summary.md
+```
+
+After merge, treat the directory as frozen historical context. Do not maintain it or include it in general agent context and repository audits. Read it only when explicitly requested or when investigating that feature's history. It may be deleted later at the user's request; do not move completed features into a separate `history/` directory.
 
 ### Skills
 
-“Who uses it” identifies who normally invokes the skill in this workflow; agents execute the instructions. “Missing” means there is no corresponding `SKILL.md` in this repository's `.agents/skills/` folder. Summaries for missing skills describe their intended role.
+“Who uses it” identifies who normally invokes the skill. `Missing` means no
+discoverable `SKILL.md`; `disabled` means repository configuration turns it off;
+`inapplicable` means it does not support the repository shape; `unavailable`
+means prerequisites are absent; and `unconfigured` means required repository
+settings are unresolved.
 
 | Skill | Brief summary | Who uses it | Missing? |
 | --- | --- | --- | --- |
-| [`$update-agent-guidance`](.agents/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Developer | No |
-| [`$create-spec`](.agents/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
-| [`$architect-and-orchestrate`](.agents/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
+| [`$configure-nag`](plugins/nag/skills/configure-nag/SKILL.md) | Configure or reconcile NAG guidance for the current repository. | Developer | No |
+| [`$create-spec`](plugins/nag/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
+| [`$architect-and-orchestrate`](plugins/nag/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
 | `$check-code-correctness` | Check builds and code correctness. | Agent | **Yes** |
 | `$check-code-quality` | Check code quality and maintainability. | Agent | **Yes** |
 | `$check-test-fidelity` | Check how well tests reflect real use. | Agent | **Yes** |
 | `$check-test-coverage` | Check coverage of required behavior. | Agent | **Yes** |
-| `$run-tests` | Run the required test suites. | Agent | **Yes** |
-| [`$dead-code-cleanup`](.agents/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
-| `$test-dashboard` | Visualize test results for developer review. | Agent | **Yes** |
+| [`$run-tests`](plugins/nag/skills/run-tests/SKILL.md) | Run repository-configured test tiers and report available metrics. | Agent | No |
+| [`$dead-code-cleanup`](plugins/nag/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
+| [`$test-dashboard`](plugins/nag/skills/test-dashboard/SKILL.md) | Generate an optional Python/pytest-only test dashboard. | Agent | No |
 | `$mermaid-visualizer` | Create diagrams for developer review. | Agent | **Yes** |
-| [`$peer-review`](.agents/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
-| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write a PR summary and append it to the task file. | Developer | No |
+| [`$peer-review`](plugins/nag/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
+| [`$create-change-summary`](plugins/nag/skills/create-change-summary/SKILL.md) | Write the feature's final `change-summary.md` for merge-request review. | Developer | No |

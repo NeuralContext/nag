@@ -1,0 +1,18 @@
+{
+  "name": "nag",
+  "version": "0.1.0",
+  "description": "NAG gated multi-agent software-development workflow skills for Codex.",
+  "author": {
+    "name": "NeuralContext"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Nag",
+    "shortDescription": "NAG gated multi-agent workflow skills for Codex.",
+    "longDescription": "NAG provides reusable specification, validation, review, and orchestration workflow skills that use innovative deterministic gating to improve quality.",
+    "developerName": "NeuralContext",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Help me use the NAG development workflow."
+  }
+}
