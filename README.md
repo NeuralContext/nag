@@ -14,7 +14,7 @@ AI has exploded the world of software development (we mean this in a good way). 
 
 | Path | What's in it |
 | --- | --- |
-| [`.agents/skills/`](.agents/skills/) | Skills and other agent-specific instructions for AI. |
+| [NAG plugin skills](plugins/nag/skills/) | Reusable workflow skills provided to Codex by the `nag` plugin. |
 | `.agents/specs/<feature-name>/` | A feature's versioned specs, peer reviews, and change summary. |
 | [`.codex/`](.codex/) | Configuration for this repository that is also reusable in other repositories. |
 | [`AGENTS.md`](AGENTS.md) | Small bootstrap that connects repository guidance to NAG. |
@@ -58,9 +58,9 @@ This is how we achieve high-quality code at a reasonable speed and price.
 
 1. Merge the small NAG bootstrap block from `AGENTS.md` into the target's root
    `AGENTS.md`; preserve its existing repository-owned instructions.
-2. Copy or merge `.agents/NAG-AGENTS.md`, `.agents/NAG-CONFIG.md`, and
-   `.agents/skills/`. Copy `.codex/` only when its agent configuration fits the
-   target environment.
+2. Install the `nag` plugin, then copy or merge `.agents/NAG-AGENTS.md` and
+   `.agents/NAG-CONFIG.md`. Copy `.codex/` only when its agent configuration
+   fits the target environment.
 3. In `.agents/NAG-CONFIG.md`, configure the design-document and temporary
    artifact paths; separate `fast`, `slow`, and `very_slow` test commands; test
    infrastructure/mock policy; dashboard applicability and outputs; and any
@@ -160,16 +160,16 @@ settings are unresolved.
 
 | Skill | Brief summary | Who uses it | Missing? |
 | --- | --- | --- | --- |
-| [`$update-agent-guidance`](.agents/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Developer | No |
-| [`$create-spec`](.agents/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
-| [`$architect-and-orchestrate`](.agents/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
+| [`$update-agent-guidance`](plugins/nag/skills/update-agent-guidance/SKILL.md) | Adapt agent guidance and skills to the target repo. | Developer | No |
+| [`$create-spec`](plugins/nag/skills/create-spec/SKILL.md) | Write an implementation spec with acceptance criteria. | Both | No |
+| [`$architect-and-orchestrate`](plugins/nag/skills/architect-and-orchestrate/SKILL.md) | Coordinate specs, delegated implementation, and review loops. | Developer | No |
 | `$check-code-correctness` | Check builds and code correctness. | Agent | **Yes** |
 | `$check-code-quality` | Check code quality and maintainability. | Agent | **Yes** |
 | `$check-test-fidelity` | Check how well tests reflect real use. | Agent | **Yes** |
 | `$check-test-coverage` | Check coverage of required behavior. | Agent | **Yes** |
-| [`$run-tests`](.agents/skills/run-tests/SKILL.md) | Run repository-configured test tiers and report available metrics. | Agent | No |
-| [`$dead-code-cleanup`](.agents/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
-| [`$test-dashboard`](.agents/skills/test-dashboard/SKILL.md) | Generate an optional Python/pytest-only test dashboard. | Agent | No |
+| [`$run-tests`](plugins/nag/skills/run-tests/SKILL.md) | Run repository-configured test tiers and report available metrics. | Agent | No |
+| [`$dead-code-cleanup`](plugins/nag/skills/dead-code-cleanup/SKILL.md) | Find and safely remove unused Python code with Vulture. | Both | No |
+| [`$test-dashboard`](plugins/nag/skills/test-dashboard/SKILL.md) | Generate an optional Python/pytest-only test dashboard. | Agent | No |
 | `$mermaid-visualizer` | Create diagrams for developer review. | Agent | **Yes** |
-| [`$peer-review`](.agents/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
-| [`$create-change-summary`](.agents/skills/create-change-summary/SKILL.md) | Write the feature's final `change-summary.md` for merge-request review. | Developer | No |
+| [`$peer-review`](plugins/nag/skills/peer-review/SKILL.md) | Review implementation against the spec and record findings. | Both | No |
+| [`$create-change-summary`](plugins/nag/skills/create-change-summary/SKILL.md) | Write the feature's final `change-summary.md` for merge-request review. | Developer | No |

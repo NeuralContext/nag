@@ -19,8 +19,8 @@ behavior and report the gap.
 
 ## Discover sources of truth
 
-Inventory applicable `AGENTS.md`, all `.agents/skills/*/SKILL.md` files and
-their required local resources, language/package manifests, task scripts, CI,
+Inventory applicable `AGENTS.md`, all installed NAG plugin skills and their
+required local resources, language/package manifests, task scripts, CI,
 formatter/linter/test configuration, and maintained documentation. Prefer
 existing repository scripts and documented commands. Preserve multi-language
 components and their package managers.

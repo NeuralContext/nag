@@ -4,7 +4,7 @@ Shared auto-detection for the bundled test-dashboard skill: finds the repo
 root, the pytest test directory, the first-party source directories the test
 suite actually imports from, and a python interpreter with pytest/pytest-cov/
 coverage/radon installed -- so this skill works when dropped into any pytest
-project's `.agents/skills/` folder with no hand-edited paths.
+installed NAG plugin's `skills/` folder with no hand-edited paths.
 
 Detection prefers real signal over convention:
   - repo root: nearest ancestor of the current directory with .git,

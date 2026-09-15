@@ -43,9 +43,9 @@ inside the repository root. Run from the repository root using the Python path
 reported by the detector:
 
 ```bash
-<detected-python> .agents/skills/test-dashboard/scripts/export_test_dashboard_data.py \
+<detected-python> <plugin-root>/skills/test-dashboard/scripts/export_test_dashboard_data.py \
   --out <repo-root>/tmp/test-dashboard-data.json
-<detected-python> .agents/skills/test-dashboard/scripts/generate_test_dashboard.py \
+<detected-python> <plugin-root>/skills/test-dashboard/scripts/generate_test_dashboard.py \
   --data <repo-root>/tmp/test-dashboard-data.json \
   --out <repo-root>/tmp/test-dashboard.html
 ```

@@ -34,8 +34,9 @@ Confirm that repository setup is complete and the current branch starts with the
 At the start of each invocation resolve `$create-spec`, `$peer-review`,
 `$check-code-correctness`, `$check-code-quality`, `$check-test-fidelity`,
 `$check-test-coverage`, `$run-tests`, `$dead-code-cleanup`, `$test-dashboard`,
-and `$mermaid-visualizer` from `.agents/skills/<skill-name>/SKILL.md`, then from
-the environment's available skill catalog if no repository copy exists. Check
+and `$mermaid-visualizer` from the installed NAG plugin's
+`skills/<skill-name>/SKILL.md`, then from the environment's available skill catalog
+if no installed NAG copy exists. Check
 the actual files each time; do not rely on a fixed availability list or the
 README's “Missing” column.
 

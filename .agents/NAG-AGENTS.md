@@ -43,7 +43,7 @@ If you are requested to "only" or "exclusively" or "just" review one or more art
 
 `.agents/` contains agent-facing material, shared by every coding agent:
 - `.agents/specs/<feature-name>/` — one feature's versioned specs, peer reviews, and change summary. A branch may contain multiple feature directories.
-- `.agents/skills/` — the skills both agents load, each self-contained. Codex reads this path natively; `.claude/skills` is a symlink to it so Claude Code sees the same files. Edit skills here only, never through the symlink's own path.
+- The installed `nag` plugin — provides the reusable NAG skills. Repository-local `.agents/` contains only repository-owned guidance, configuration, and feature artifacts.
 - `.agents/NAG-CONFIG.md` - repository-specific information for NAG skills. Read it before invoking a NAG skill and apply the corresponding section.
 
 This file is the root instruction file; `CLAUDE.md` is a symlink to it.

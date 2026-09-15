@@ -1,0 +1,20 @@
+{
+  "name": "nag",
+  "interface": {
+    "displayName": "Nag"
+  },
+  "plugins": [
+    {
+      "name": "nag",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nag"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
