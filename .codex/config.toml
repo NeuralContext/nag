@@ -1,6 +1,8 @@
 service_tier = "auto"      # anything other than "fast"/"priority"; "auto" lets Codex use Standard
-sandbox_mode = "workspace-write"
 approval_policy = "on-request"
+
+# Do not combine this with sandbox_mode or [sandbox_workspace_write].
+default_permissions = "repo"
 
 [agents]
 max_threads = 2
@@ -13,22 +15,21 @@ fast_mode = false
 [notice]
 fast_default_opt_out = true
 
-[permissions.filesystem]
-# Explicitly deny access so tools like read or cat hard-fail
-deny = [
-  "**/.venv/**",
-  "**/node_modules/**",
-  "**/dist/**"
-]
+[permissions.repo]
+extends = ":workspace"
 
-# Ask before modifying skills (takes priority over general workspace allow)
-ask_write = [
-    ".codex/**",
-    ".agents/**",
-    "AGENTS.md"
-]
+# Rules are relative to every workspace root.
+[permissions.repo.filesystem.":workspace_roots"]
 
-# Silently allow all other writes inside the workspace
-allow_write = [
-    "**/*"
-]
+".agents/specs" = "write"
+
+# These remain readable, but any modification needs an approval escalation.
+".codex/" = "read"
+".agents/" = "read"
+"AGENTS.md" = "read"
+
+
+# Hard block: Codex cannot read or write these through its sandbox.
+".venv/" = "deny"
+"node_modules/" = "deny"
+"dist/" = "deny"
