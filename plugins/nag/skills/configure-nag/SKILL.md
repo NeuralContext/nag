@@ -74,10 +74,23 @@ enablement choices, and rationales. Never replace a resolved value with an
 angle-bracket template placeholder. Replace live references to prior skill
 names with `$configure-nag`; do not rewrite frozen feature history.
 
-When presets were accepted, merge only the two verified supported preset files;
-retain unrelated TOML settings and agent definitions. If a conflict cannot be
-resolved safely, preserve the target value and report it. Do nothing in
-`.codex/` when the prompt was declined.
+When NAG presets were accepted, do the following:
+  - Merge the two verified supported preset files;
+  - Retain unrelated TOML settings and agent definitions. If a conflict cannot be
+  resolved safely, preserve the target value and report it. 
+  - Review the .codex/config.toml file and identify filepaths in the [permissions.repo.filesystem.":workspace_roots"] section that do not currently exist. 
+    - Prompt the user for permission to remove these filepaths from the .codex/config.toml file. Explain that:
+      "The following filepaths are configured in the .codex/config.toml file but don't exist in your repository.
+      Codex may erroneously create empty files if those paths aren't removed from the config. If you plan to create the folders soon, you
+      may wish to leave the config. If not, I recommend removing them.
+      
+      Can I remove the filepaths from .codex/config.toml that don't exist in your repository? You can say 'yes','no', or specify the filepaths to 
+      delete."
+    - IF the user replies affirmatively, remove the filepaths from .codex/config that don't exist in the repository
+    - IF the user replies negatively, don't remove any filepaths from .codex/config
+    - IF the user replies with a list of filepaths, only remove those filepaths from .codex/config 
+
+Do nothing in`.codex/` if the user declined the NAG preset prompt.
 
 Repeated runs with unchanged inputs must not create formatting churn, reorder
 unrelated content, or add another bootstrap block. Ask before ambiguous,
