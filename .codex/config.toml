@@ -10,6 +10,7 @@ max_depth = 1
 
 [features]
 fast_mode = false
+multi_agent = true
 
 # Persist the opt-out that `/fast off` writes, so a fast-on default can't re-apply
 [notice]
