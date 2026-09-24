@@ -18,8 +18,6 @@ required file or setting is missing, follow `NAG-AGENTS.md` fallback behavior
 and report the gap. Use the configured review-standards path when it exists;
 otherwise use the portable standards below and disclose the missing reference.
 
-
-
 If the `$peer-review` section of the NAG-CONFIG.md shows `Enabled: no`, skip this skill completely and alert the user.
 
 
@@ -33,9 +31,8 @@ If the `$peer-review` section of the NAG-CONFIG.md shows `Enabled: no`, skip thi
 ## Select inputs and output
 
 Prefer the exact `.agents/specs/<feature-name>/spec-vN.md` supplied by the user
-or current orchestration workflow. Otherwise follow the shared feature-directory
-selection contract and ask when ambiguous. Never infer a feature from the
-branch alone.
+or current orchestration workflow. If no spec(s) location was provided, use the 
+`$find-scope-directory` skill to determine the most likely scope specification(s).
 
 The only output is the selected spec's paired path:
 
