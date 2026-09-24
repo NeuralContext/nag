@@ -123,14 +123,15 @@ Initialize the repo using [Getting Started](#getting-started) before following t
 ### Process
 
 1. **Developer:** 
-   - Create a branch with the issue number at the start (e.g. `134-fix-all-the-broken-stuff`)
-   - Start Codex with a high-tier model (e.g. 5.6-sol or astra)
+   - Create a branch with the issue number at the start (e.g. `10-my-new-capability`)
+   - Start Codex with a high-tier model (e.g. gpt-6-sol or astra)
    - Run `$create-spec`.
-      - Prefer creating `.agents/specs/<feature-name>/` first or supplying the name to the skill when you start it (e.g. `$create-spec 10-add-test-metrics`).
-      - Use a kebab-case name such as `10-feature-description`, normally beginning with the issue identifier.
-      - One branch may have multiple feature directories, such as `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
-      - If no directory or name is supplied, `$create-spec` uses a single uninitialized directory the user already created. If there are several, it asks which one to use. If there are none, it proposes a name from the branch and requested work and asks for confirmation before creating it.
-2. **Architec Agent + Developer:** 
+      - Create `.agents/specs/xyz-my-feature/` first or supply the name to the skill when you start it (e.g. `$create-spec xyz-my-feature`).
+      - Use a kebab-case name such as `10-feature-description`, where the first section is the issue number.
+        - The issue number should match the first section of the branch name (e.g. `10-my-new-capability`)
+      - One branch may have multiple iterative spec directories, such as `10-add-test-metrics`, `10-update-run-tests-skill`, and `10-move-to-plugin-folder-hierarchy`.
+      - If no directory or name is supplied, `$create-spec` will do its best to make something reasonable
+2. **Architect Agent + Developer:** 
    - Work together to define the scope and acceptance criteria
    - Architect agent writes `.agents/specs/<feature-name>/spec-v1.md`.
    - Developer answers questions and approves it before implementation.
