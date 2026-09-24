@@ -24,6 +24,8 @@ Before using any NAG skill:
 4. Apply the configuration section for the active skill, if present.
 5. If a required file or setting is missing, use the fallbacks below and
    report the gap. Never invent a destructive, networked, or expensive command.
+6. Nag skills assume codex was started from the root directory of a git repository. Verify 
+  this is correct upon initial tool startup. If it is not the case, warn the user.
 
 ## Goals and Principles
 1. Code is the primary source of documentation.
