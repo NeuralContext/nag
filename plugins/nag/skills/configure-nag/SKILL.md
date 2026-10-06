@@ -35,7 +35,7 @@ branches.
    canonical resource retrieval: do not construct URLs or use ad hoc network,
    Git, browser, or local-template fallbacks.
 5. On a nonzero result, stop before target writes and report its diagnostics,
-   script path, pinned commit `fcbc43b9af615cfdd564e84c127e41909be95575`, and
+   script path, pinned commit `ba3bfe15408d523db5df467d72601493b294368e`, and
    the exact resource URL that failed. On success, capture its sole stdout
    absolute staging path, require that directory to exist, and read only staged
    resources. Remove exactly that returned directory after applying or
@@ -75,7 +75,10 @@ angle-bracket template placeholder. Replace live references to prior skill
 names with `$configure-nag`; do not rewrite frozen feature history.
 
 When NAG presets were accepted, do the following:
-  - Merge the two verified supported preset files;
+  - From the returned staging directory, merge
+    `templates/.codex/config.toml` into the target repository's
+    `.codex/config.toml` and `templates/.codex/agents/implementer.toml` into
+    the target repository's `.codex/agents/implementer.toml`;
   - Retain unrelated TOML settings and agent definitions. If a conflict cannot be
   resolved safely, preserve the target value and report it. 
   - Review the .codex/config.toml file and identify filepaths in the [permissions.repo.filesystem.":workspace_roots"] section that do not currently exist. 

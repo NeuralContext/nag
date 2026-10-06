@@ -16,7 +16,8 @@ AI has exploded the world of software development (we mean this in a good way). 
 | --- | --- |
 | [NAG plugin skills](plugins/nag/skills/) | Reusable workflow skills provided to Codex by the `nag` plugin. |
 | `.agents/specs/<feature-name>/` | A feature's versioned specs, peer reviews, and change summary. |
-| [`.codex/`](.codex/) | Configuration for this repository that is also reusable in other repositories. |
+| [`.codex/`](.codex/) | Active Codex configuration for this repository. |
+| [`templates/.codex/`](templates/.codex/) | Reusable Codex presets fetched by `$configure-nag` for consuming repositories. |
 | [`AGENTS.md`](AGENTS.md) | Small bootstrap that connects repository guidance to NAG. |
 | [`.agents/NAG-AGENTS.md`](.agents/NAG-AGENTS.md) | Portable NAG-wide defaults and invariants. |
 | [`.agents/NAG-CONFIG.md`](.agents/NAG-CONFIG.md) | Repository-owned paths, commands, policies, and overrides. |
