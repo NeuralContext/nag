@@ -31,3 +31,6 @@ extends = ":workspace"
 
 
 # Hard block: Codex cannot read or write these through its sandbox.
+".venv/" = "deny"
+"node_modules/" = "deny"
+"dist/" = "deny"
