@@ -1,6 +1,6 @@
 {
   "name": "nag",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "NAG gated multi-agent software-development workflow skills for Codex.",
   "author": {
     "name": "NeuralContext"
