@@ -12,17 +12,17 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-PINNED_COMMIT = "fcbc43b9af615cfdd564e84c127e41909be95575"
+PINNED_COMMIT = "ba3bfe15408d523db5df467d72601493b294368e"
 SOURCE_REPOSITORY = "https://github.com/NeuralContext/nag"
 RAW_REPOSITORY = "https://raw.githubusercontent.com/NeuralContext/nag"
 REQUIRED_RESOURCES = (
     ("AGENTS.md", "2c82fbaa129fbb4a486797e4971fd89fc0bc2497578093529627cb960a32b88e", "markdown"),
-    (".agents/NAG-AGENTS.md", "233a48a54f9ebdf91e3e62c5f4356c47e5d93042ae87e90a50930e4db8fd0237", "markdown"),
-    (".agents/NAG-CONFIG.md", "21a0386b40f21bde39306db7c82e2cd81d1c4c8f8bba3d8bc0b86c69b0600a5e", "markdown"),
+    (".agents/NAG-AGENTS.md", "35ed17b28541617cfc4d06815c0d9ca70cbceeb2fb3c3b1c1694f5bb56e5505a", "markdown"),
+    (".agents/NAG-CONFIG.md", "c63c28a561946bf55d75574ba8c1df9c11d73c6c9bf86571e62aa9b62a6650cf", "markdown"),
 )
 CODEX_RESOURCES = (
-    (".codex/config.toml", "17f559bed7055b75f6561870c1df642f43fffad66c0e1401b2a9ced6adeb8c97", "toml"),
-    (".codex/agents/implementer.toml", "3ec363539088722648b3880776efd2b58537308087bef8607809f10718f65bda", "toml"),
+    ("templates/.codex/config.toml", "210eab80c20e41b50bd1efcbd4ba96365ad460de5f8bd154bfbecb99aaf9da61", "toml"),
+    ("templates/.codex/agents/implementer.toml", "bd8178a4d1168395f5ae966ce82ac667ccbb6120dc18ef2a50ac0030dc57f0b8", "toml"),
 )
 
 
